@@ -1,5 +1,5 @@
 from django.urls import path, include
-from Hotzone import views
+from backend import views
 from django.views.generic import TemplateView
 
 urlpatterns = [

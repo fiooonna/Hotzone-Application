@@ -1,10 +1,12 @@
-from django.urls import path, include
-from backend import views
-from django.views.generic import TemplateView
+from django.urls import include, path
+from rest_framework import routers
+from . import views
+
 
 urlpatterns = [
-  path("", TemplateView.as_view(template_name='index.html')),
-  path("api/location/<str:searchTerm>",views.locationSearch,name="location"),
-  path("api/add/",views.addLocation,name="addLocation")
+  path("location/<str:searchTerm>",views.locationSearch,name="location"),
+  path("add/",views.addLocation,name="addLocation"),
+  path("signin/",views.signin,name="login"),
+  path("getUserInfo/",views.getInfoView.as_view(),name="getUserInfo")
   # path('',views.index,name='index')
 ]

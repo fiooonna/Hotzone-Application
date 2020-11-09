@@ -1,10 +1,33 @@
 from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
-from django.shortcuts import render
 from .models import VisitedLocation
+from django.contrib.auth import authenticate, login, logout
 import requests
-from django.views.decorators.csrf import csrf_exempt,csrf_protect #Add this
+from django.views.decorators.csrf import csrf_exempt,csrf_protect 
 import json
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+def loadParams(body):
+  body_unicode = body.decode('utf-8')
+  body = json.loads(body_unicode)
+  params = body['params']
+  return params
+
+class getInfoView(APIView):
+  permission_classes = (IsAuthenticated,)    
+  @csrf_exempt
+  def post(self, request):
+    current_user = request.user
+    info =  {
+      "status": "Success",
+      "username": current_user.username,
+      "first": current_user.first_name,
+      "last":current_user.last_name
+    }
+    return Response(info)
 
 
 def locationSearch(request,searchTerm):
@@ -18,3 +41,44 @@ def addLocation(request):
   body = json.loads(body_unicode)
   VisitedLocation.objects.create(location=body['nameEN'],address=body['addressEN'],xcoord=body['x'],ycoord=body['y'])
   return HttpResponse("Success")
+
+@csrf_exempt
+def signin(request):
+  params = loadParams(request.body)
+  print(params)
+  # user = authenticate(username=params['username'], password=params['password'])
+  # if user is not None:
+  #   token = Token.objects.get_or_create(user=user)
+  #   print(token)
+  #   response =  {
+  #     "status": "Success",
+  #     "token": token[0].key
+  #   }
+     
+  #   return HttpResponse(json.dumps(response))
+  # else: 
+  #   response =  {
+  #     "status": "Failed",
+  #   }
+  #   return HttpResponse(json.dumps(response))
+
+  username = params['username']
+  password = params['password']
+  user = authenticate(request, username=username, password=password)
+  if user is not None:
+    login(request, user)
+    current_user = request.user
+    token = Token.objects.get_or_create(user=user)
+    print(token)
+    response =  {
+      "status": "Success",
+      "token": token[0].key,
+    }
+    return HttpResponse(json.dumps(response))
+  else: 
+    response =  {
+      "status": "Failed",
+    }
+    return HttpResponse(json.dumps(response))
+
+

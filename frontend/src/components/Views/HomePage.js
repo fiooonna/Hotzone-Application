@@ -3,6 +3,8 @@ import { createUseStyles } from "react-jss"
 import cn from "classnames"
 import { useRootState } from "@/App.js"
 import { request } from "@/request.js"
+import ClickAway from "@/components/Utils/ClickAway.js"
+import { useCookies } from "react-cookie"
 
 const useHomePageStyle = createUseStyles({
   root: {
@@ -96,20 +98,46 @@ const useHomePageStyle = createUseStyles({
   menuBtn: {
     fontSize: 25,
     cursor: "pointer",
+    marginRight: 5,
   },
   title: {
     fontSize: 45,
     fontWeight: "bold",
   },
 
-  username: {
+  account: {
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
+    position: "relative",
     alignItems: "center",
+    
+  },
+  username: {
+    cursor: "pointer",
+    textDecoration: " underline",
+  },
+  accountOption: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    justifyContent: "center",
+    boxShadow: "1px 2px",
+    border: "1px solid grey",
+    backgroundColor: "lightgrey",
+    width: 200,
+    height: 50,
+    borderRadius: 5,
+    padding: 5,
+    "& > *:not(:first-child)": {
+      marginTop: 10
+    },
     "& div": {
       cursor: "pointer",
-      textDecoration: " underline",
+    textDecoration: " underline",
     },
   },
   searchBtn: {
@@ -164,22 +192,35 @@ const HomePage = () => {
   const classes = useHomePageStyle()
   const [selected, setSelected] = useState(false)
   const [{ name }, dispatch] = useRootState()
-
+  const [modal, setModal] = useState(false)
+  const [cookies, setCookie, removeCookie] = useCookies(['cookie-name'])
+  
   useEffect(() => {
-    (async () =>{
+    ;(async () => {
       const result = await request("getUserInfo")
-      if(result.status === "Success"){
+      if (result.status === "Success") {
         const username = result.username
-        const name = result.first+" "+result.last
-        dispatch({ type: "SET_USER", username, name})
+        const name = result.first + " " + result.last
+        dispatch({ type: "SET_USER", username, name })
         console.log(result)
-      } 
+      }
     })()
-    
   }, [])
+
   const addNewRecord = () => {
-    console.log("hi")
     setSelected(true)
+  }
+
+  const onClick = (state) => {
+    setModal(!state)
+  }
+
+  const logout = async () => {
+    const result = await request("signout")
+    if(result.status === "Success"){
+      removeCookie("token")
+      window.location.reload()
+    }
   }
   return (
     <div className={classes.root}>
@@ -187,8 +228,18 @@ const HomePage = () => {
         <i className={cn("fa fa-bars", classes.menuBtn)}></i>
         <span className={classes.title}>HotZone</span>
       </div>
-      <div className={classes.username}>
-        <div>{name}</div>
+      <div className={classes.account}>
+        {modal && (
+          <ClickAway onClick={onClick}>
+            <div
+              className={classes.accountOption}
+            >
+              {/* <div>Change Password</div> */}
+              <div onClick={logout}>Logout</div>
+            </div>
+          </ClickAway>
+        )}
+        <div className={classes.username} onClick={() => setModal(true)}>{name}</div>
       </div>
       <div className={classes.menuPanel}>
         <div

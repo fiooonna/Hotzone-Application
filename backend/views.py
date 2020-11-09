@@ -29,6 +29,16 @@ class getInfoView(APIView):
     }
     return Response(info)
 
+class signoutView(APIView):
+  permission_classes = (IsAuthenticated,)    
+  @csrf_exempt
+  def post(self, request):
+    logout(request)
+    info =  {
+      "status": "Success",
+    }
+    return Response(info)
+
 
 def locationSearch(request,searchTerm):
   x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)

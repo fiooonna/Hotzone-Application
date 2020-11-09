@@ -25,7 +25,7 @@ const LineInput = (props) => {
   const classes = useLineInputStyle()
   return (
     <div className={classes.root}>
-      <input type="input" className={classes.input} required onChange={props.onChange}/>
+      <input type={props.type? props.type : "input"} className={classes.input} required onChange={props.onChange}/>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { createUseStyles } from "react-jss"
 import cn from "classnames"
+import { useRootState } from "@/App.js"
+import { request } from "@/request.js"
 
 const useHomePageStyle = createUseStyles({
   root: {
@@ -144,8 +146,7 @@ const useInputFormStyle = createUseStyles({
   },
   selectionLabel: {
     fontSize: 20,
-  }
-
+  },
 })
 
 const InputForm = () => {
@@ -154,10 +155,7 @@ const InputForm = () => {
     <div className={classes.root}>
       <div className={classes.selectionTitle}>Patient asdnformation</div>
       <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>
-          Patient Name:
-        </div>
-        
+        <div className={classes.selectionLabel}>Patient Name:</div>
       </div>
     </div>
   )
@@ -165,10 +163,20 @@ const InputForm = () => {
 const HomePage = () => {
   const classes = useHomePageStyle()
   const [selected, setSelected] = useState(false)
+  const [{ name }, dispatch] = useRootState()
 
   useEffect(() => {
-    console.log(selected)
-  },[selected])
+    (async () =>{
+      const result = await request("getUserInfo")
+      if(result.status === "Success"){
+        const username = result.username
+        const name = result.first+" "+result.last
+        dispatch({ type: "SET_USER", username, name})
+        console.log(result)
+      } 
+    })()
+    
+  }, [])
   const addNewRecord = () => {
     console.log("hi")
     setSelected(true)
@@ -176,41 +184,32 @@ const HomePage = () => {
   return (
     <div className={classes.root}>
       <div className={classes.flex}>
-        <i className={cn("fa fa-bars",classes.menuBtn)}></i>
+        <i className={cn("fa fa-bars", classes.menuBtn)}></i>
         <span className={classes.title}>HotZone</span>
       </div>
       <div className={classes.username}>
-        <div>YourUsername</div>
+        <div>{name}</div>
       </div>
       <div className={classes.menuPanel}>
         <div
           onClick={addNewRecord}
-          className={cn(classes.addNew,classes.menuOptions)}
+          className={cn(classes.addNew, classes.menuOptions)}
         >
           New record
         </div>
-        <div
-          className={cn(classes.addNew,classes.menuOptions)}
-        >
+        <div className={cn(classes.addNew, classes.menuOptions)}>
           View Records
         </div>
-        <div
-          className={cn(classes.addNew,classes.menuOptions)}
-        >
-          Analysis
-        </div>
+        <div className={cn(classes.addNew, classes.menuOptions)}>Analysis</div>
       </div>
-      {
-        selected?
-        <InputForm/>
-        :
+      {selected ? (
+        <InputForm />
+      ) : (
         <div className={classes.unselected}>
-        Please choose from the left options
+          Please choose from the left options
         </div>
-      }
-      {
-
-      }
+      )}
+      {}
     </div>
   )
 }

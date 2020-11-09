@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { createUseStyles } from "react-jss"
 import cn from "classnames"
-import LineInput from "../Utils/LineInput"
+import LineInput from "@/components/Utils/LineInput.js"
+import { request } from "@/request.js"
+
+
 
 const useLoginStlye = createUseStyles({
   root: {
@@ -48,13 +51,20 @@ const useLoginStlye = createUseStyles({
 
 
 
-const Login = () => {
+const Login = (props) => {
   const classes = useLoginStlye()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  
 
-  const login = () => {
-
+  const login = async () => {
+    if(username !== "" && password !== ""){
+      const result = await request("signin",{username: username, password: password})
+      if(result.status === "Success"){
+        props.onLoginSuccess(result.token)
+      }
+    }
+    
   }
   return (
     <div className={classes.root}>
@@ -62,11 +72,11 @@ const Login = () => {
       <div className={classes.loginBox}>
         <div className={classes.column}>
           <div>Usename</div>
-          <LineInput onChange={e => setUsername(e.target.value)}/>
+          <LineInput onChange={e => setUsername(e.target.value)} />
         </div>
         <div className={classes.column}>
           <div>Password</div>
-          <LineInput onChange={e => setPassword(e.target.value)}/>
+          <LineInput onChange={e => setPassword(e.target.value)} type="password"/>
         </div>
         <div className={classes.loginBtn} onClick={login}>Login</div>
       </div>

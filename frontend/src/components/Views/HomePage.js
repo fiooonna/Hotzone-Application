@@ -3,8 +3,11 @@ import { createUseStyles } from "react-jss"
 import cn from "classnames"
 import { useRootState } from "@/App.js"
 import { request } from "@/request.js"
-import ClickAway from "@/components/Utils/ClickAway.js"
+import ClickAway from "@/components/Utils/ClickAway"
 import { useCookies } from "react-cookie"
+import AddNewRecord from "@/components/Views/AddNewRecord"
+import ViewRecord from "@/components/Views/ViewRecord"
+import VirusInfo from "./VirusInfo"
 
 const useHomePageStyle = createUseStyles({
   root: {
@@ -111,7 +114,6 @@ const useHomePageStyle = createUseStyles({
     justifyContent: "flex-end",
     position: "relative",
     alignItems: "center",
-    
   },
   username: {
     cursor: "pointer",
@@ -133,11 +135,11 @@ const useHomePageStyle = createUseStyles({
     borderRadius: 5,
     padding: 5,
     "& > *:not(:first-child)": {
-      marginTop: 10
+      marginTop: 10,
     },
     "& div": {
       cursor: "pointer",
-    textDecoration: " underline",
+      textDecoration: " underline",
     },
   },
   searchBtn: {
@@ -154,47 +156,13 @@ const useHomePageStyle = createUseStyles({
   },
 })
 
-const useInputFormStyle = createUseStyles({
-  root: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingLeft: 30,
-  },
-  selectionTitle: {
-    width: "100%",
-    fontSize: 40,
-    borderBottom: "1px solid black",
-    fontWeight: 500,
-    marginBottom: 10,
-  },
-  selectionField: {
-    display: "flex",
-  },
-  selectionLabel: {
-    fontSize: 20,
-  },
-})
-
-const InputForm = () => {
-  const classes = useInputFormStyle()
-  return (
-    <div className={classes.root}>
-      <div className={classes.selectionTitle}>Patient asdnformation</div>
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Patient Name:</div>
-      </div>
-    </div>
-  )
-}
 const HomePage = () => {
   const classes = useHomePageStyle()
-  const [selected, setSelected] = useState(false)
+  const [currentDisplay, setCurrentDisplay] = useState("")
   const [{ name }, dispatch] = useRootState()
   const [modal, setModal] = useState(false)
-  const [cookies, setCookie, removeCookie] = useCookies(['cookie-name'])
-  
+  const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"])
+
   useEffect(() => {
     ;(async () => {
       const result = await request("getUserInfo")
@@ -208,7 +176,7 @@ const HomePage = () => {
   }, [])
 
   const addNewRecord = () => {
-    setSelected(true)
+    setCurrentDisplay("addNewRecord")
   }
 
   const onClick = (state) => {
@@ -217,7 +185,7 @@ const HomePage = () => {
 
   const logout = async () => {
     const result = await request("signout")
-    if(result.status === "Success"){
+    if (result.status === "Success") {
       removeCookie("token")
       window.location.reload()
     }
@@ -231,15 +199,15 @@ const HomePage = () => {
       <div className={classes.account}>
         {modal && (
           <ClickAway onClick={onClick}>
-            <div
-              className={classes.accountOption}
-            >
+            <div className={classes.accountOption}>
               {/* <div>Change Password</div> */}
               <div onClick={logout}>Logout</div>
             </div>
           </ClickAway>
         )}
-        <div className={classes.username} onClick={() => setModal(true)}>{name}</div>
+        <div className={classes.username} onClick={() => setModal(true)}>
+          {name}
+        </div>
       </div>
       <div className={classes.menuPanel}>
         <div
@@ -248,19 +216,24 @@ const HomePage = () => {
         >
           New record
         </div>
-        <div className={cn(classes.addNew, classes.menuOptions)}>
+        <div
+          className={cn(classes.addNew, classes.menuOptions)}
+          onClick={() => setCurrentDisplay("viewRecord")}
+        >
           View Records
         </div>
-        <div className={cn(classes.addNew, classes.menuOptions)}>Analysis</div>
+        <div className={cn(classes.addNew, classes.menuOptions)} onClick={() => setCurrentDisplay("virusInfo")}>
+          Virus Info
+        </div>
       </div>
-      {selected ? (
-        <InputForm />
-      ) : (
+      {currentDisplay === "" && (
         <div className={classes.unselected}>
           Please choose from the left options
         </div>
       )}
-      {}
+      {currentDisplay === "addNewRecord" && <AddNewRecord />}
+      {currentDisplay === "viewRecord" && <ViewRecord />}
+      {currentDisplay === "virusInfo" && <VirusInfo />}
     </div>
   )
 }

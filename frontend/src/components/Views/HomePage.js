@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState}from "react"
 import { createUseStyles } from "react-jss"
 import cn from "classnames"
 import { useRootState } from "@/App.js"
@@ -8,6 +8,9 @@ import { useCookies } from "react-cookie"
 import AddNewRecord from "@/components/Views/AddNewRecord"
 import ViewRecord from "@/components/Views/ViewRecord"
 import VirusInfo from "./VirusInfo"
+
+// import ReactTable from "react-table";
+// import "react-table/react-table.css"
 
 const useHomePageStyle = createUseStyles({
   root: {
@@ -156,6 +159,48 @@ const useHomePageStyle = createUseStyles({
   },
 })
 
+<<<<<<< Updated upstream
+=======
+const useInputFormStyle = createUseStyles({
+  root: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    paddingLeft: 30,
+  },
+  selectionTitle: {
+    width: "100%",
+    fontSize: 40,
+    borderBottom: "1px solid black",
+    fontWeight: 500,
+    marginBottom: 10,
+  },
+  selectionField: {
+    display: "flex",
+  },
+  selectionLabel: {
+    fontSize: 20,
+  },
+})
+
+const InputForm = () => {
+  const classes = useInputFormStyle()
+  return (
+    <div className={classes.root}>
+      <div className={classes.selectionTitle}>Patient Information</div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Patient Name:</div>
+      </div>
+    </div>
+  )
+}
+const ViewTable = () => {
+  return (
+    <div><h1>Table for Records</h1></div>
+  );
+}
+>>>>>>> Stashed changes
 const HomePage = () => {
   const classes = useHomePageStyle()
   const [currentDisplay, setCurrentDisplay] = useState("")
@@ -179,6 +224,9 @@ const HomePage = () => {
     setCurrentDisplay("addNewRecord")
   }
 
+  const viewRecord = () => {
+    setSelected(true)
+  }
   const onClick = (state) => {
     setModal(!state)
   }
@@ -211,22 +259,35 @@ const HomePage = () => {
       </div>
       <div className={classes.menuPanel}>
         <div
-          onClick={addNewRecord}
+          onClick={addNewRecord} value="add"
           className={cn(classes.addNew, classes.menuOptions)}
         >
           New record
         </div>
+<<<<<<< Updated upstream
         <div
           className={cn(classes.addNew, classes.menuOptions)}
           onClick={() => setCurrentDisplay("viewRecord")}
         >
           View Records
+=======
+        <div 
+          onClick={viewRecord} value="view"
+          className={cn(classes.addNew, classes.menuOptions)}>
+          View Records 
+>>>>>>> Stashed changes
         </div>
         <div className={cn(classes.addNew, classes.menuOptions)} onClick={() => setCurrentDisplay("virusInfo")}>
           Virus Info
         </div>
       </div>
+<<<<<<< Updated upstream
       {currentDisplay === "" && (
+=======
+      {selected ? (
+        <ViewTable/>
+      ) : (
+>>>>>>> Stashed changes
         <div className={classes.unselected}>
           Please choose from the left options
         </div>

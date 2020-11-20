@@ -9,6 +9,7 @@ import { useTable } from 'react-table'
 import '../../table.css'
 import MOCK_DATA from '../../MOCK_DATA.json'
 
+
 const tableStyle = createUseStyles({
   root: {
     width: "100%",
@@ -45,15 +46,23 @@ const ViewRecord = (props) => {
   const COLUMNS = [
     {
       Header: 'CaseId',
-      accessor:'case_Id'
+      accessor:'case_no'
     },
+    // {
+    //   Header:'Patient Name',
+    //   accessor:'patient_name'
+    // },
     {
-      Header:'Patient Name',
-      accessor:'patient_name'
+      Header:'Patient ID',
+      accessor:'patient_id'
     },
+    // {
+    //   Header:'Virus Name',
+    //   accessor:'virus_name'
+    // },
     {
-      Header:'Virus Name',
-      accessor:'virus_name'
+      Header:'virus ID',
+      accessor:'virus_id'
     },
     {
       Header:'Date Confirmed',
@@ -64,7 +73,7 @@ const ViewRecord = (props) => {
     },
   ]
   const columns = useMemo(() => COLUMNS, [])
-  const data = useMemo(() => MOCK_DATA, [])
+  const data = useMemo(() => request('viewDetail'), [])//not done
   const tableInstance = useTable({
     columns,
     data,

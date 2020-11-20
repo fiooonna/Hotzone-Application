@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .models import Case
+
 def loadParams(body):
   body_unicode = body.decode('utf-8')
   body = json.loads(body_unicode)
@@ -45,6 +47,13 @@ def locationSearch(request,searchTerm):
   return HttpResponse(x)
   #response = requests.get('http://my-ulr.com')
   
+# def getTableData(request):
+  
+@csrf_exempt
+def viewDetail(request):
+  obj = Case.objects.get(case_no=1)
+  return (obj)
+
 @csrf_exempt
 def addLocation(request):
   body_unicode = request.body.decode('utf-8')

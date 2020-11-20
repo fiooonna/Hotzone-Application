@@ -46,7 +46,7 @@ const AddPatientInfo = (props) => {
   const classes = useInputFormStyle()
   return (
     <div className={classes.root}>
-      <div className={classes.selectionTitle}>Patient asdnformation</div>
+      <div className={classes.selectionTitle}>Patient Information</div>
       <div className={classes.selectionField}>
         <div className={classes.selectionLabel}>Patient Name:</div>
       </div>

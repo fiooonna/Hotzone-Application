@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
-from .models import VisitedLocation
+from .models import Geodata
 from django.contrib.auth import authenticate, login, logout
 import requests
 from django.views.decorators.csrf import csrf_exempt,csrf_protect 
@@ -49,7 +49,7 @@ def locationSearch(request,searchTerm):
 def addLocation(request):
   body_unicode = request.body.decode('utf-8')
   body = json.loads(body_unicode)
-  VisitedLocation.objects.create(location=body['nameEN'],address=body['addressEN'],xcoord=body['x'],ycoord=body['y'])
+  Geodata.objects.create(location_name=body['nameEN'],address=body['addressEN'],Xcoord=body['x'],Ycoord=body['y'])
   return HttpResponse("Success")
 
 @csrf_exempt

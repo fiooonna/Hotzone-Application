@@ -23,6 +23,7 @@ export async function request(endpoint, params) {
     console.error(e)
   }
   const data = await response.json()
+  console.log(data)
   return data
   // if (data.hasOwnProperty("result")) {
   //   console.log("???")

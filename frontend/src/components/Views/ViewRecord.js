@@ -54,7 +54,7 @@ const ViewRecord = (props) => {
     // },
     {
       Header:'Patient ID',
-      accessor:'patient_id'
+      accessor:'patient'
     },
     // {
     //   Header:'Virus Name',
@@ -62,7 +62,7 @@ const ViewRecord = (props) => {
     // },
     {
       Header:'virus ID',
-      accessor:'virus_id'
+      accessor:'virus'
     },
     {
       Header:'Date Confirmed',
@@ -72,8 +72,13 @@ const ViewRecord = (props) => {
       Header:'URL'
     },
   ]
+  const TABLE = request('viewDetail',[])
+  console.log(JSON.stringify(request('viewDetail',[])))
   const columns = useMemo(() => COLUMNS, [])
-  const data = useMemo(() => request('viewDetail'), [])//not done
+
+  const data = useMemo(() => TABLE,[])//not done
+
+  // console.log(JSON.stringify(request('viewDetail')))
   const tableInstance = useTable({
     columns,
     data,

@@ -1,22 +1,26 @@
 from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
-from .models import Geodata
 from django.contrib.auth import authenticate, login, logout
 import requests
 from django.views.decorators.csrf import csrf_exempt,csrf_protect 
 import json
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Case
+from rest_framework import serializers
+from .models import *
+from rest_framework.decorators import api_view
+from django.http import JsonResponse
 
 def loadParams(body):
   body_unicode = body.decode('utf-8')
   body = json.loads(body_unicode)
   params = body['params']
   return params
+
+
 
 class getInfoView(APIView):
   permission_classes = (IsAuthenticated,)    
@@ -49,10 +53,35 @@ def locationSearch(request,searchTerm):
   
 # def getTableData(request):
   
+@api_view(['GET'])
+def apiOverview(request):
+  api_urls = {
+    'viewDetail':'viewDetail',
+  }
+  return Response(api_urls)
+
+class CaseSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Case
+    fields = "__all__"
+
+
+
+def json_default(value):
+    if isinstance(value, datetime.date):
+        return dict(year=value.year, month=value.month, day=value.day)
+    else:
+        return value.__dict__
+
+  # permission_classes = [AllowAny]
 @csrf_exempt
 def viewDetail(request):
-  obj = Case.objects.get(case_no=1)
-  return (obj)
+  obj = Case.objects.all()
+  serializer = CaseSerializer(obj, many=True)
+  # test = json.dumps(obj, default=lambda o: o.__dict__)
+  print(serializer)
+  return JsonResponse(serializer.data, safe=False)
+
 
 @csrf_exempt
 def addLocation(request):

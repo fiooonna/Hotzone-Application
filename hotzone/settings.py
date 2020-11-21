@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'jpkqm$aym+2uf9g(2++rg-x@^l(bwynegl_=gbe%ev9su6!fmf'
+SECRET_KEY =  env('HOTZONE_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['hotzone-groupv.herokuapp.com', 'localhost', '127.0.0.1', '0.0.0.0']
 

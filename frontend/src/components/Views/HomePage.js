@@ -159,8 +159,6 @@ const useHomePageStyle = createUseStyles({
   },
 })
 
-<<<<<<< Updated upstream
-=======
 const useInputFormStyle = createUseStyles({
   root: {
     width: "100%",
@@ -200,7 +198,6 @@ const ViewTable = () => {
     <div><h1>Table for Records</h1></div>
   );
 }
->>>>>>> Stashed changes
 const HomePage = () => {
   const classes = useHomePageStyle()
   const [currentDisplay, setCurrentDisplay] = useState("")
@@ -225,7 +222,7 @@ const HomePage = () => {
   }
 
   const viewRecord = () => {
-    setSelected(true)
+    setCurrentDisplay("viewRecord")
   }
   const onClick = (state) => {
     setModal(!state)
@@ -264,30 +261,17 @@ const HomePage = () => {
         >
           New record
         </div>
-<<<<<<< Updated upstream
         <div
           className={cn(classes.addNew, classes.menuOptions)}
           onClick={() => setCurrentDisplay("viewRecord")}
         >
           View Records
-=======
-        <div 
-          onClick={viewRecord} value="view"
-          className={cn(classes.addNew, classes.menuOptions)}>
-          View Records 
->>>>>>> Stashed changes
         </div>
         <div className={cn(classes.addNew, classes.menuOptions)} onClick={() => setCurrentDisplay("virusInfo")}>
           Virus Info
         </div>
       </div>
-<<<<<<< Updated upstream
       {currentDisplay === "" && (
-=======
-      {selected ? (
-        <ViewTable/>
-      ) : (
->>>>>>> Stashed changes
         <div className={classes.unselected}>
           Please choose from the left options
         </div>

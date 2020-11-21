@@ -76,7 +76,7 @@ const ViewRecord = (props) => {
   console.log(JSON.stringify(request('viewDetail',[])))
   const columns = useMemo(() => COLUMNS, [])
 
-  const data = useMemo(() => TABLE,[])//not done
+  const data = useMemo(() => MOCK_DATA,[])//not done
 
   // console.log(JSON.stringify(request('viewDetail')))
   const tableInstance = useTable({

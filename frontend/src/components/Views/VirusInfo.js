@@ -61,14 +61,23 @@ const VirusInfo = (props) => {
   const [vname, setVname] = useState("")
   const [disease, setDisease] = useState("")
   const [maxp, setMaxp] = useState("")
+  const [data, setData] = useState([])
+  // const [selectCase, setSelectedCase] = useState(null)
 
-
-  const vinfo = async () => {
-      const result = await request("addVinfo",{vname: vname, disease: disease, maxp: maxp})
-      setVname("")
-      setDisease("")
-      setMaxp("")
-  }
+  // const vinfo = async () => {
+  //     const result = await request("addVinfo",{vname: vname, disease: disease, maxp: maxp})
+  //     setVname("")
+  //     setDisease("")
+  //     setMaxp("")
+  // }
+  const vinfo = async () => {   
+    setVname("")
+    setDisease("")
+    setMaxp("")
+    window.alert("Virus input Successful")
+    window.location.reload()
+    const result = await request("addVinfo",{vname: vname, disease: disease, maxp: maxp})
+}
 
 
   const COLUMNS = [
@@ -78,7 +87,7 @@ const VirusInfo = (props) => {
     },
     {
       Header:'Disease',
-      accessor:'disease'
+      accessor:'common_name'
     },
     {
       Header:'Max. Infectious Period (days)',
@@ -86,7 +95,14 @@ const VirusInfo = (props) => {
     },
   ]
   const columns = useMemo(() => COLUMNS, [])
-  const data = useMemo(() => MOCK_DATA, [])
+
+  useEffect(() => {
+    (async() => {
+      const result = await request('getAllVirus',[])
+      setData(result)
+    })()
+  },[])
+
   const tableInstance = useTable({
     columns,
     data,
@@ -124,36 +140,41 @@ const VirusInfo = (props) => {
 
       <br /><br /><br />
 
-
-      <table>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {
-                headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-                ))
-              }
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <tr {...row.getRowProps()}>
+      {
+        data.length > 0 &&
+        <table>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
                 {
-                  row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                  })
+                  headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                  ))
                 }
               </tr>
-            )
-          })
-          }
-        </tbody>
-      </table>
-
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <tr {...row.getRowProps()}>
+                  {
+                    row.cells.map((cell) => {
+                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    })
+                  }
+                </tr>
+              )
+            })
+            }
+          </tbody>
+        </table>
+      }
+      {/* {
+        selectCase &&
+        <CaseDetail />
+      } */}
     </div>
   )
 }

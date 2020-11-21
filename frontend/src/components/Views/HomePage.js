@@ -109,6 +109,7 @@ const useHomePageStyle = createUseStyles({
   title: {
     fontSize: 45,
     fontWeight: "bold",
+    cursor: "pointer",
   },
 
   account: {
@@ -239,7 +240,7 @@ const HomePage = () => {
     <div className={classes.root}>
       <div className={classes.flex}>
         <i className={cn("fa fa-bars", classes.menuBtn)}></i>
-        <span className={classes.title}>HotZone</span>
+        <span className={classes.title} onClick={() => setCurrentDisplay("")}>HotZone</span>
       </div>
       <div className={classes.account}>
         {modal && (

@@ -60,9 +60,29 @@ class getCaseByIdView(APIView):
   @csrf_exempt
   def post(self, request):
     params = loadParams(request.body)
-    obj = Case.objects.get(case_no=params['id'])
-    serializer = CaseSerializer(obj,many=False)
-    return Response(serializer.data)  
+    case = Case.objects.get(case_no=params['id'])
+    virus = case.virus
+    patient = case.patient
+    case_serializer = CaseSerializer(case,many=False)
+    patient_serializer = PatientSerializer(patient, many=False)
+    virus_serializer = VirusSerializer(virus, many=False)
+
+    visited = Visited.objects.filter(case_no=params['id'])
+    locations = list()
+    for visit in visited:
+      location = visit.geodata
+      location_serializer = GeodataSerializer(location, many=False)
+      locations.append(location_serializer.data)
+
+    visited_serializer = VisitedSerializer(visited, many=True)
+    response = {
+      'case':case_serializer.data,
+      "patient": patient_serializer.data,
+      "virus": virus_serializer.data,
+      "visited": visited_serializer.data,
+      "locations": locations
+    }
+    return Response(response)  
 
 def locationSearch(request,searchTerm):
   x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)

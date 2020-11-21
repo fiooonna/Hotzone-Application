@@ -32,7 +32,7 @@ const useInputFormStyle = createUseStyles({
   selectionLabel: {
     fontSize: 20,
   },
-  selectionInputField:{
+  selectionInputField: {
     width: "400px",
     marginLeft: 20,
     marginTop: 5,
@@ -55,7 +55,6 @@ const useInputFormStyle = createUseStyles({
     },
     lineHeight: "28px",
   },
-
 })
 
 const AddPatientInfo = (props) => {
@@ -68,6 +67,17 @@ const AddPatientInfo = (props) => {
   const [localImported, setLocalImported] = useState("")
   const [virusName, setVirusName] = useState("")
 
+  const nextPage = () => {
+    const patient = {
+      patient_name: patientName,
+      hkid: patientID,
+      birth_date: patientDOB,
+      virus_name: virusName,
+      date_confirmed: dateConfirmed,
+      local_or_imported: localImported
+    }
+    props.onPageChange(1,patient)
+  }
   return (
     <div className={classes.root}>
       <form>
@@ -75,31 +85,33 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Patient Name:</div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={e => setPatientName(e.target.value)} />
+            <LineInput onChange={(e) => setPatientName(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Patient ID Document Number:</div>
+          <div className={classes.selectionLabel}>
+            Patient ID Document Number:
+          </div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={e => setIDNumber(e.target.value)} />
-            </div>
+            <LineInput onChange={(e) => setIDNumber(e.target.value)} />
+          </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date of Birth:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={e => setPatientDOB(e.target.value)} />
+            <DateInput onChange={(e) => setPatientDOB(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date Confirmed:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={e => setDateConfirmed(e.target.value)} />
+            <DateInput onChange={(e) => setDateConfirmed(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Local/Imported:</div>
           <div className={classes.selectionInputField}>
-            <LocImpInput onChange={e => setLocalImported(e.target.value)} />
+            <LocImpInput onChange={(e) => setLocalImported(e.target.value)} />
           </div>
         </div>
 
@@ -108,17 +120,17 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Virus Name:</div>
           <div className={classes.selectionInputField}>
-            <SearchInput onChange={e => setVirusName(e.target.value)} />
+            <SearchInput onChange={(e) => setVirusName(e.target.value)} />
           </div>
         </div>
 
         <div className={classes.selectionField}>
           <div className={classes.selectionInputField}>
-            <SubmitButton onChange={e => setVirusName(e.target.value)} />
+            <SubmitButton onChange={(e) => setVirusName(e.target.value)} />
           </div>
         </div>
 
-        <div className={classes.nextPage} onClick={() => props.onPageChange(1)}>
+        <div className={classes.nextPage} onClick={nextPage}>
           Next Page
         </div>
       </form>

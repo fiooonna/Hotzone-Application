@@ -12,7 +12,12 @@ import LocationInfo from "./LocationInfo"
 
 const AddNewRecord = (props) => {
   const [page, setPage] = useState(0)
-  const onPageChange = (pageNum) => {
+  const [patientInfo, setPatientInfo] = useState(null)
+  const onPageChange = (pageNum, patient) => {
+    if(patient){
+      console.log(patient)
+      setPatientInfo(patient)
+    }
     setPage(pageNum)
   }
   return (

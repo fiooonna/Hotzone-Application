@@ -67,6 +67,28 @@ const AddPatientInfo = (props) => {
   const [localImported, setLocalImported] = useState("")
   const [virusName, setVirusName] = useState("")
 
+  const pinfo = async () => {
+    if (!patientName || !patientID || !patientDOB || !dateConfirmed || !localImported || !virusName) {
+      alert("Missing some fields")
+    } else {
+      await request("addPatientinfo", {
+        patientName: patientName,
+        patientID: patientID,
+        patientDOB: patientDOB,
+        dateConfirmed: dateConfirmed,
+        localImported: localImported,
+        virusName: virusName,
+      })
+      setPatientName("")
+      setIDNumber("")
+      setPatientDOB("")
+      setDateConfirmed("")
+      setLocalImported("")
+      setVirusName("")
+      window.alert("You have successfully input the patient and virus info.")
+    }
+  }
+
   const nextPage = () => {
     const patient = {
       patient_name: patientName,
@@ -126,7 +148,7 @@ const AddPatientInfo = (props) => {
 
         <div className={classes.selectionField}>
           <div className={classes.selectionInputField}>
-            <SubmitButton onChange={(e) => setVirusName(e.target.value)} />
+            <SubmitButton onClick={pinfo} onChange={(e) => setVirusName(e.target.value)} />
           </div>
         </div>
 

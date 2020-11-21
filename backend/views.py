@@ -93,6 +93,16 @@ class getAllVirusView(APIView):
     serializer = VirusSerializer(obj,many=True)
     return Response(serializer.data)    
 
+# For getting the information of the patient
+class getPatientInfo(APIView):
+  permission_classes = (IsAuthenticated,)
+
+  @csrf_exempt
+  def post(self, request):
+    obj = Patient.objects.all()
+    serializer = PatientSerializer(obj, many = True)
+    return Response (serializer.data)
+
 # class getVirusByIdView(APIView):
 #   permission_classes = (IsAuthenticated,)
 
@@ -126,7 +136,22 @@ def viewDetail(request):
   print(serializer)
   return JsonResponse(serializer.data, safe=False)
 
-
+# Patient Information to backend
+@csrf_exempt
+def addPatientinfo(request):
+  params = loadParams(request.body)
+  print(params)
+  pname = params['patientName']
+  pid = params['patientID']
+  pdob = params['patientDOB']
+  pDateConfirmed = params['dateConfirmed']
+  plocalImported = params['localImported']
+  Patient.objects.create(patient_name=pname, hkid=pid, birth_date= pdob)
+  Case.Objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported)
+  response =  {
+      "status": "Success",
+    }
+  return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def addVinfo(request):

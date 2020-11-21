@@ -136,7 +136,10 @@ def addVinfo(request):
   disease = params['disease']
   maxp = params['maxp']
   Virus.objects.create(virus_name=vname, common_name=disease, max_infect_period= maxp)
-  return HttpResponse("Success")
+  response =  {
+      "status": "Success",
+    }
+  return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def addLocation(request):

@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import requests
-from django.views.decorators.csrf import csrf_exempt,csrf_protect 
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 import json
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -23,7 +23,7 @@ def loadParams(body):
 
 
 class getInfoView(APIView):
-  permission_classes = (IsAuthenticated,)    
+  permission_classes = (IsAuthenticated,)
   @csrf_exempt
   def post(self, request):
     current_user = request.user
@@ -36,7 +36,7 @@ class getInfoView(APIView):
     return Response(info)
 
 class signoutView(APIView):
-  permission_classes = (IsAuthenticated,)    
+  permission_classes = (IsAuthenticated,)
   @csrf_exempt
   def post(self, request):
     logout(request)
@@ -52,7 +52,7 @@ class getAllCaseView(APIView):
   def post(self, request):
     obj = Case.objects.all()
     serializer = CaseSerializer(obj,many=True)
-    return Response(serializer.data)    
+    return Response(serializer.data)
 
 class getCaseByIdView(APIView):
   permission_classes = (IsAuthenticated,)
@@ -82,7 +82,7 @@ class getCaseByIdView(APIView):
       "visited": visited_serializer.data,
       "locations": locations
     }
-    return Response(response)  
+    return Response(response)
 
 class getAllVirusView(APIView):
   permission_classes = (IsAuthenticated,)
@@ -91,7 +91,7 @@ class getAllVirusView(APIView):
   def post(self, request):
     obj = Virus.objects.all()
     serializer = VirusSerializer(obj,many=True)
-    return Response(serializer.data)    
+    return Response(serializer.data)
 
 # For getting the information of the patient
 class getPatientInfo(APIView):
@@ -111,15 +111,15 @@ class getPatientInfo(APIView):
 #     params = loadParams(request.body)
 #     obj = Virus.objects.get(case_no=params['id'])
 #     serializer = VirusSerializer(obj,many=False)
-#     return Response(serializer.data)  
+#     return Response(serializer.data)
 
 def locationSearch(request,searchTerm):
   x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
   return HttpResponse(x)
   #response = requests.get('http://my-ulr.com')
-  
+
 # def getTableData(request):
-  
+
 
 def json_default(value):
     if isinstance(value, datetime.date):
@@ -146,8 +146,10 @@ def addPatientinfo(request):
   pdob = params['patientDOB']
   pDateConfirmed = params['dateConfirmed']
   plocalImported = params['localImported']
-  Patient.objects.create(patient_name=pname, hkid=pid, birth_date= pdob)
-  Case.Objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported)
+  p=Patient(patient_name=pname, hkid=pid, birth_date= pdob)
+  p.save()
+  c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p, virus =Virus.objects.get(pk=2))
+  c.save()
   response =  {
       "status": "Success",
     }
@@ -190,10 +192,8 @@ def signin(request):
       "token": token[0].key,
     }
     return HttpResponse(json.dumps(response))
-  else: 
+  else:
     response =  {
       "status": "Failed",
     }
     return HttpResponse(json.dumps(response))
-
-

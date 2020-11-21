@@ -13,7 +13,7 @@ import SubmitButton from "@/components/Utils/SubmitButton.js"
 import { useTable } from "react-table"
 import "../../table_virus.css"
 
-const tableStyle = createUseStyles({
+const useInputFormStyle = createUseStyles({
   root: {
     width: "100%",
     display: "flex",
@@ -58,8 +58,21 @@ const tableStyle = createUseStyles({
     },
     lineHeight: "28px",
   },
+  submitBtn: {
+    marginTop: 20,
+    width: "10%",
+    height: 40,
+    color: "white",
+    backgroundColor: "black",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontSize: 20,
+  },
 })
-/*
+
 const AddPatientInfo = (props) => {
   const [page, setPage] = useState(0)
   const classes = useInputFormStyle()
@@ -71,9 +84,6 @@ const AddPatientInfo = (props) => {
   const [virusName, setVirusName] = useState("")
 
   const pinfo = async () => {
-    if (!patientName || !patientID || !patientDOB || !dateConfirmed || !localImported || !virusName) {
-      alert("Missing some fields")
-    } else {
       await request("addPatientinfo", {
         patientName: patientName,
         patientID: patientID,
@@ -89,7 +99,6 @@ const AddPatientInfo = (props) => {
       setLocalImported("")
       setVirusName("")
       window.alert("You have successfully input the patient and virus info.")
-    }
   }
 
   const nextPage = () => {
@@ -105,12 +114,11 @@ const AddPatientInfo = (props) => {
   }
   return (
     <div className={classes.root}>
-      <form>
         <div className={classes.selectionTitle}>Patient Information</div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Patient Name:</div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={(e) => setPatientName(e.target.value)} />
+            <input value={patientName} onChange={(e) => setPatientName(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
@@ -118,25 +126,25 @@ const AddPatientInfo = (props) => {
             Patient ID Document Number:
           </div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={(e) => setIDNumber(e.target.value)} />
+            <input value={patientID} onChange={(e) => setIDNumber(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date of Birth:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={(e) => setPatientDOB(e.target.value)} />
+            <DateInput value={patientDOB} onChange={(e) => setPatientDOB(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date Confirmed:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={(e) => setDateConfirmed(e.target.value)} />
+            <DateInput value={dateConfirmed} onChange={(e) => setDateConfirmed(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Local/Imported:</div>
           <div className={classes.selectionInputField}>
-            <LocImpInput onChange={(e) => setLocalImported(e.target.value)} />
+            <LocImpInput value={localImported} onChange={(e) => setLocalImported(e.target.value)} />
           </div>
         </div>
 
@@ -145,185 +153,22 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Virus Name:</div>
           <div className={classes.selectionInputField}>
-            <SearchInput onChange={(e) => setVirusName(e.target.value)} />
+            <input value={virusName} onChange={(e) => setVirusName(e.target.value)} />
           </div>
         </div>
 
         <div className={classes.selectionField}>
-          <div className={classes.selectionInputField}>
-            <SubmitButton onClick={pinfo} onChange={(e) => setVirusName(e.target.value)} />
+          <div className={classes.submitBtn} onClick={pinfo}>
+            Submit
           </div>
         </div>
 
         <div className={classes.nextPage} onClick={nextPage}>
           Next Page
         </div>
-      </form>
     </div>
   )
 }
 
 export default AddPatientInfo
-*/
 
-const AddPatientInfo = (props) => {
-  const classes = tableStyle()
-  const [data, setData] = useState([])
-  const [patientName, setPatientName] = useState("")
-  const [patientID, setIDNumber] = useState("")
-  const [patientDOB, setPatientDOB] = useState("")
-  const [dateConfirmed, setDateConfirmed] = useState("")
-  const [localImported, setLocalImported] = useState("")
-  const [virusName, setVirusName] = useState("")
-
-  const pinfo = async () => {
-    if (!patientName || !patientID || !patientDOB) {
-      alert("Missing some fields")
-    } else {
-      await request("addPatientinfo", {
-        patient_name: patientName,
-        hkid: patientID,
-        birth_date: patientDOB,
-        virus_name: virusName,
-        date_confirmed: dateConfirmed,
-        local_or_imported: localImported
-      })
-      setPatientName("")
-      setIDNumber("")
-      setPatientDOB("")
-      setDateConfirmed("")
-      setLocalImported("")
-      setVirusName("")
-      window.alert("You have successfully input the virus info.")
-    }
-  }
-
-  const nextPage = () => {
-    const patient = {
-      patient_name: patientName,
-      hkid: patientID,
-      birth_date: patientDOB,
-      virus_name: virusName,
-      date_confirmed: dateConfirmed,
-      local_or_imported: localImported
-    }
-    props.onPageChange(1,patient)
-  }
-
-  const COLUMNS = [
-    {
-      Header: "Patient Name",
-      accessor: "patient_name",
-    },
-    {
-      Header: "Patient HKID",
-      accessor: "hkid",
-    },
-    {
-      Header: "Patient DOB",
-      accessor: "birth_date",
-    },
-  ]
-  const columns = useMemo(() => COLUMNS, [])
-
-  useEffect(() => {
-    ;(async () => {
-      const result = await request("getPatientInfo", [])
-      setData(result)
-    })()
-  }, [patientName])
-
-  const tableInstance = useTable({
-    columns,
-    data,
-  })
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = tableInstance
-
-  return (
-    <div className={classes.root}>
-      <div className={classes.selectionTitle}>Patient Information</div>
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Patient Name:</div>
-        <input value={patientName} onChange={(e) => setPatientName(e.target.value)} />
-      </div>
-      <br />
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Patient ID Document Number: </div>
-        <input value={patientID} onChange={(e) => setIDNumber(e.target.value)} />
-      </div>
-      <br />
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Date of Birth:</div>
-        <input value={patientDOB} type='date' onChange={(e) => setPatientDOB(e.target.value)} />
-      </div>
-      <br />
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Date Confirmed:</div>
-        <input value={dateConfirmed} type='date' onChange={(e) => setDateConfirmed(e.target.value)} />
-      </div>
-      <br />
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Local/Imported:</div>
-        <select value={localImported} required onChange={(e) => setLocalImported(e.target.value)}>
-          <option value="local">Local</option>
-          <option value="import">Imported</option>
-        </select>
-      </div>
-      <br />
-      <div className={classes.selectionTitle}>Virus Information</div>
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>Virus Name:</div>
-        <input type="search" value={virusName} onChange={(e) => setVirusName(e.target.value)} />
-      </div>
-      <br />
-      <div className={classes.submitBtn} onClick={pinfo}>
-        Submit
-      </div>
-      <div className={classes.nextPage} onClick={nextPage}>
-          Next Page
-        </div>
-
-      <br />
-      <br />
-      <br />
-
-      {data.length > 0 && (
-        <table>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      )}
-    </div>
-  )
-}
-
-export default AddPatientInfo

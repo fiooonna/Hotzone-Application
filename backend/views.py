@@ -13,6 +13,7 @@ from rest_framework import serializers
 from .models import *
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
+from rest_framework import filters, generics
 
 def loadParams(body):
   body_unicode = body.decode('utf-8')
@@ -101,7 +102,14 @@ class getPatientInfo(APIView):
   def post(self, request):
     obj = Patient.objects.all()
     serializer = PatientSerializer(obj, many = True)
+    print(obj)
     return Response (serializer.data)
+
+class patientFormVirus(generics.ListAPIView):
+    queryset = Virus.objects.all()
+    serializer_class = VirusSerializer(queryset,many=True)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['virus_name', 'common_name']
 
 # class getVirusByIdView(APIView):
 #   permission_classes = (IsAuthenticated,)
@@ -146,10 +154,21 @@ def addPatientinfo(request):
   pdob = params['patientDOB']
   pDateConfirmed = params['dateConfirmed']
   plocalImported = params['localImported']
+  pVirus = params['virusName']
   p=Patient(patient_name=pname, hkid=pid, birth_date= pdob)
+
+  #print(Patient.objects.count())
+  #print(Patient.objects.get(patient_name="person15"))
   p.save()
-  c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p, virus =Virus.objects.get(pk=2))
-  c.save()
+  mylen = Virus.objects.count()+1
+  #i=1
+  for i in range(1, mylen):
+    if (pVirus == str(Virus.objects.get(pk=i))):
+      c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p,virus=Virus.objects.get(pk=1))
+      print("Info saved!")
+      c.save()
+  #virus=Virus.objects.get(pk=2); common_name; max_infect_period
+
   response =  {
       "status": "Success",
     }

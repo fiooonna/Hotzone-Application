@@ -153,7 +153,7 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Virus Name:</div>
           <div className={classes.selectionInputField}>
-            <input value={virusName} onChange={(e) => setVirusName(e.target.value)} />
+            <input value={virusName} type="search" onChange={(e) => setVirusName(e.target.value)} />
           </div>
         </div>
 

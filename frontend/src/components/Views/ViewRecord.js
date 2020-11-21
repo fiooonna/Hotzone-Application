@@ -39,9 +39,20 @@ const tableStyle = createUseStyles({
   //   bottom: 0,
   //   right: 20,
   // },
-
+  row: {
+    cursor: "pointer",
+  },
 })
+
+const CaseDetail = (props) => {
+  return (
+    <div>Test</div>
+  )
+}
 const ViewRecord = (props) => {
+  const [data, setData] = useState([])
+  const [selectCase, setSelectedCase] = useState(null)
+
   const classes = tableStyle()
   const COLUMNS = [
     {
@@ -68,16 +79,16 @@ const ViewRecord = (props) => {
       Header:'Date Confirmed',
       accessor:'date_confirmed'
     },
-    {
-      Header:'URL'
-    },
   ]
-  const TABLE = request('viewDetail',[])
-  console.log(JSON.stringify(request('viewDetail',[])))
   const columns = useMemo(() => COLUMNS, [])
 
-  const data = useMemo(() => MOCK_DATA,[])//not done
-
+  //const data = useMemo(() => MOCK_DATA,[])//not done
+  useEffect(() => {
+    (async() => {
+      const result = await request('getAllCase',[])
+      setData(result)
+    })()
+  },[])
   // console.log(JSON.stringify(request('viewDetail')))
   const tableInstance = useTable({
     columns,
@@ -90,12 +101,22 @@ const ViewRecord = (props) => {
     rows,
     prepareRow,
   } = tableInstance
+  console.log(rows)
+
+  const showDetails = async(row) => {
+    console.log(row)
+    const result = await request('getCaseById',{id:row.values.case_no})
+    setSelectedCase(result)
+    console.log(result)
+  }
   return (
     <div className={classes.root}>
       <div>
         <div className={classes.bigTitle}>View Record</div>
       </div>
-      <table>
+      {
+        data.length > 0 && !selectCase &&
+        <table>
         <thead>
           {/* <tr>
             <th>CaseID</th>
@@ -125,7 +146,7 @@ const ViewRecord = (props) => {
           {rows.map((row) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} onClick={() => {showDetails(row)}} className={classes.row}>
                 {
                   row.cells.map((cell) => {
                   return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
@@ -137,9 +158,17 @@ const ViewRecord = (props) => {
           }
         </tbody>
       </table>
+      }
+      {
+        selectCase &&
+        <CaseDetail />
+      }
+      
     </div>
 
   )
 }
+
+
 
 export default ViewRecord

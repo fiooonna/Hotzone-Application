@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from .serializers import *
 from rest_framework import serializers
 from .models import *
 from rest_framework.decorators import api_view
@@ -45,6 +45,24 @@ class signoutView(APIView):
     }
     return Response(info)
 
+class getAllCaseView(APIView):
+  permission_classes = (IsAuthenticated,)
+
+  @csrf_exempt
+  def post(self, request):
+    obj = Case.objects.all()
+    serializer = CaseSerializer(obj,many=True)
+    return Response(serializer.data)    
+
+class getCaseByIdView(APIView):
+  permission_classes = (IsAuthenticated,)
+
+  @csrf_exempt
+  def post(self, request):
+    params = loadParams(request.body)
+    obj = Case.objects.get(case_no=params['id'])
+    serializer = CaseSerializer(obj,many=False)
+    return Response(serializer.data)  
 
 def locationSearch(request,searchTerm):
   x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
@@ -53,19 +71,6 @@ def locationSearch(request,searchTerm):
   
 # def getTableData(request):
   
-@api_view(['GET'])
-def apiOverview(request):
-  api_urls = {
-    'viewDetail':'viewDetail',
-  }
-  return Response(api_urls)
-
-class CaseSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Case
-    fields = "__all__"
-
-
 
 def json_default(value):
     if isinstance(value, datetime.date):
@@ -94,22 +99,6 @@ def addLocation(request):
 def signin(request):
   params = loadParams(request.body)
   print(params)
-  # user = authenticate(username=params['username'], password=params['password'])
-  # if user is not None:
-  #   token = Token.objects.get_or_create(user=user)
-  #   print(token)
-  #   response =  {
-  #     "status": "Success",
-  #     "token": token[0].key
-  #   }
-     
-  #   return HttpResponse(json.dumps(response))
-  # else: 
-  #   response =  {
-  #     "status": "Failed",
-  #   }
-  #   return HttpResponse(json.dumps(response))
-
   username = params['username']
   password = params['password']
   user = authenticate(request, username=username, password=password)

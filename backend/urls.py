@@ -11,5 +11,6 @@ urlpatterns = [
   path("getUserInfo/",views.getInfoView.as_view(),name="getUserInfo"),
   path("getAllCase/",views.getAllCaseView.as_view(),name="getAllCase"),
   path("getCaseById/",views.getCaseByIdView.as_view(),name="getCaseById"),
+  path("addVinfo/",views.addVinfo,name="addVinfo"),
   # path('',views.index,name='index')
 ]

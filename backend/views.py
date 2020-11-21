@@ -87,6 +87,15 @@ def viewDetail(request):
   print(serializer)
   return JsonResponse(serializer.data, safe=False)
 
+@csrf_exempt
+def addVinfo(request):
+  params = loadParams(request.body)
+  print(params)
+  vname = params['vname']
+  disease = params['disease']
+  maxp = params['maxp']
+  Virus.objects.create(virus_name=vname, common_name=disease, max_infect_period= maxp)
+  return HttpResponse("Success")
 
 @csrf_exempt
 def addLocation(request):

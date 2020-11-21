@@ -1,0 +1,5 @@
+[{"virus_name":"Citroën","disease":"CX","max_infect_period":1},
+{"virus_name":"Suzuki","disease":"Esteem","max_infect_period":2},
+{"virus_name":"Chrysler","disease":"Town & Country","max_infect_period":3},
+{"virus_name":"Volkswagen","disease":"New Beetle","max_infect_period":4},
+{"virus_name":"Chevrolet","disease":"Corvette","max_infect_period":5}]

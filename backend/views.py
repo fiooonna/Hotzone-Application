@@ -84,6 +84,25 @@ class getCaseByIdView(APIView):
     }
     return Response(response)  
 
+class getAllVirusView(APIView):
+  permission_classes = (IsAuthenticated,)
+
+  @csrf_exempt
+  def post(self, request):
+    obj = Virus.objects.all()
+    serializer = VirusSerializer(obj,many=True)
+    return Response(serializer.data)    
+
+# class getVirusByIdView(APIView):
+#   permission_classes = (IsAuthenticated,)
+
+#   @csrf_exempt
+#   def post(self, request):
+#     params = loadParams(request.body)
+#     obj = Virus.objects.get(case_no=params['id'])
+#     serializer = VirusSerializer(obj,many=False)
+#     return Response(serializer.data)  
+
 def locationSearch(request,searchTerm):
   x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
   return HttpResponse(x)
@@ -107,6 +126,17 @@ def viewDetail(request):
   print(serializer)
   return JsonResponse(serializer.data, safe=False)
 
+
+
+@csrf_exempt
+def addVinfo(request):
+  params = loadParams(request.body)
+  print(params)
+  vname = params['vname']
+  disease = params['disease']
+  maxp = params['maxp']
+  Virus.objects.create(virus_name=vname, common_name=disease, max_infect_period= maxp)
+  return HttpResponse("Success")
 
 @csrf_exempt
 def addLocation(request):

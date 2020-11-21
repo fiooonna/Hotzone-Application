@@ -2,13 +2,11 @@ import React, { useEffect, useState, useMemo } from "react"
 import { createUseStyles } from "react-jss"
 import cn from "classnames"
 import { useRootState } from "@/App.js"
-import LineInput from "@/components/Utils/LineInput.js"
 import { request } from "@/request.js"
 import ClickAway from "@/components/Utils/ClickAway"
 
 import { useTable } from 'react-table'
 import '../../table_virus.css'
-import MOCK_DATA from '../../MOCK_DATA_virus.json'
 
 const tableStyle = createUseStyles({
   root: {
@@ -31,13 +29,6 @@ const tableStyle = createUseStyles({
   },
   selectionLabel: {
     fontSize: 20,
-  },
-  nextPage: {
-    cursor: "pointer",
-    textDecoration: " underline",
-    position: "absolute",
-    bottom: 0,
-    right: 20,
   },
   submitBtn: {
     marginTop: 20,
@@ -62,19 +53,12 @@ const VirusInfo = (props) => {
   const [disease, setDisease] = useState("")
   const [maxp, setMaxp] = useState("")
   const [data, setData] = useState([])
-  // const [selectCase, setSelectedCase] = useState(null)
 
-  // const vinfo = async () => {
-  //     const result = await request("addVinfo",{vname: vname, disease: disease, maxp: maxp})
-  //     setVname("")
-  //     setDisease("")
-  //     setMaxp("")
-  // }
-  const vinfo = async () => {   
+  const vinfo = async () => {
     setVname("")
     setDisease("")
     setMaxp("")
-    window.alert("Virus input Successful")
+    window.alert("You have successfully input the virus info.")
     window.location.reload()
     const result = await request("addVinfo",{vname: vname, disease: disease, maxp: maxp})
 }
@@ -135,9 +119,6 @@ const VirusInfo = (props) => {
         <br />
         <div className={classes.submitBtn} onClick={vinfo}>Submit</div>
 
-
-
-
       <br /><br /><br />
 
       {
@@ -171,10 +152,6 @@ const VirusInfo = (props) => {
           </tbody>
         </table>
       }
-      {/* {
-        selectCase &&
-        <CaseDetail />
-      } */}
     </div>
   )
 }

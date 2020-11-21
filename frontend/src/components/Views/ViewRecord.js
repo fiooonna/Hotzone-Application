@@ -7,7 +7,6 @@ import ClickAway from "@/components/Utils/ClickAway"
 
 import { useTable } from 'react-table'
 import '../../table.css'
-import MOCK_DATA from '../../MOCK_DATA.json'
 
 
 const tableStyle = createUseStyles({
@@ -26,19 +25,6 @@ const tableStyle = createUseStyles({
     fontWeight: 500,
     marginBottom: 10,
   },
-  // selectionField: {
-  //   display: "flex",
-  // },
-  // selectionLabel: {
-  //   fontSize: 20,
-  // },
-  // nextPage: {
-  //   cursor: "pointer",
-  //   textDecoration: " underline",
-  //   position: "absolute",
-  //   bottom: 0,
-  //   right: 20,
-  // },
   row: {
     cursor: "pointer",
   },
@@ -59,18 +45,10 @@ const ViewRecord = (props) => {
       Header: 'CaseId',
       accessor:'case_no'
     },
-    // {
-    //   Header:'Patient Name',
-    //   accessor:'patient_name'
-    // },
     {
       Header:'Patient ID',
       accessor:'patient'
     },
-    // {
-    //   Header:'Virus Name',
-    //   accessor:'virus_name'
-    // },
     {
       Header:'virus ID',
       accessor:'virus'
@@ -82,14 +60,13 @@ const ViewRecord = (props) => {
   ]
   const columns = useMemo(() => COLUMNS, [])
 
-  //const data = useMemo(() => MOCK_DATA,[])//not done
   useEffect(() => {
     (async() => {
       const result = await request('getAllCase',[])
       setData(result)
     })()
   },[])
-  // console.log(JSON.stringify(request('viewDetail')))
+
   const tableInstance = useTable({
     columns,
     data,
@@ -118,13 +95,6 @@ const ViewRecord = (props) => {
         data.length > 0 && !selectCase &&
         <table>
         <thead>
-          {/* <tr>
-            <th>CaseID</th>
-            <th>PatientName</th>
-            <th>Virus</th>
-            <th>Date Confirmed</th>
-            <th>URL for more details</th>
-          </tr> */}
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {
@@ -136,13 +106,6 @@ const ViewRecord = (props) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {/* <tr>
-            <td>dummy_ID</td>
-            <td>Dummy Chan</td>
-            <td>CoVID-19</td>
-            <td>dd-mm-yyyy</td>
-            <td><a href="https://www.gooogle.com">URL</a></td>
-          </tr> */}
           {rows.map((row) => {
             prepareRow(row)
             return (
@@ -163,7 +126,7 @@ const ViewRecord = (props) => {
         selectCase &&
         <CaseDetail />
       }
-      
+
     </div>
 
   )

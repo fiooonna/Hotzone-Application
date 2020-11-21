@@ -13,7 +13,8 @@ urlpatterns = [
   path("getCaseById/",views.getCaseByIdView.as_view(),name="getCaseById"),
   path("addVinfo/",views.addVinfo,name="addVinfo"),
   path("getAllVirus/",views.getAllVirusView.as_view(),name="getAllVirus"),
-  path("addPatientInfo", views.addPatientinfo, name="addPatientInfo"),
+  path("addPatientInfo", views.getPatientInfo, name="addPatientInfo"),
+  path("getPatientView/",views.getPatientInfo.as_view(),name="getAllPatient"),
   # path("getVirusById/",views.getVirusByIdView.as_view(),name="getVirusById"),
   # path('',views.index,name='index')
 ]

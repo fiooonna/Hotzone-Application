@@ -149,19 +149,33 @@ def viewDetail(request):
 def addPatientinfo(request):
   params = loadParams(request.body)
   print(params)
-  pname = params['patientName']
   pid = params['patientID']
+  pname = params['patientName']
   pdob = params['patientDOB']
   pDateConfirmed = params['dateConfirmed']
   plocalImported = params['localImported']
   pVirus = params['virusName']
   p=Patient(patient_name=pname, hkid=pid, birth_date= pdob)
+  p.save()
 
+  #mylenpatients = Patient.objects.count()
+  #print(mylenpatients)
+  #print(type(Patient.objects.all()[3]))
+  #print(Patient.objects.all()[3].hkid)
+  #print(type(Patient.objects.all()[3].hkid))
+  #print(Patient.objects.get(hkid='682679'))
+  #j=1
+  #for j in range (1, mylenpatients):
+    #if (pid == Patient.objects.all()[j].hkid):
+      #p=Patient.objects.get(hkid=pid)
+      #print("Existing Patient!")
+      #pass
+    #else:
+      #pass
   #print(Patient.objects.count())
   #print(Patient.objects.get(patient_name="person15"))
-  p.save()
+
   mylen = Virus.objects.count()+1
-  #i=1
   for i in range(1, mylen):
     if (pVirus == str(Virus.objects.get(pk=i))):
       c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p,virus=Virus.objects.get(pk=1))

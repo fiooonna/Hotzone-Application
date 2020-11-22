@@ -1,21 +1,22 @@
 from django.db import models
+import uuid
 
 class Geodata(models.Model):
     location_name = models.CharField(max_length=200)
     address = models.TextField()
     Xcoord = models.DecimalField(max_digits=20, decimal_places=10)
     Ycoord = models.DecimalField(max_digits=20, decimal_places=10)
-    
+
     def __str__(self):
         return self.location_name
 
 class Patient(models.Model):
     patient_name = models.CharField(max_length=200)
-    hkid = models.CharField(max_length=10,primary_key=True)
+    hkid = models.CharField(max_length=10,primary_key=True,default=uuid.uuid1)
     birth_date = models.DateField()
 
     def __str__(self):
-        return self.patient_name 
+        return self.patient_name
 
 class Virus(models.Model):
     virus_name = models.CharField(max_length=200)
@@ -38,8 +39,8 @@ class Case(models.Model):
 
 
 class Visited(models.Model):
-    date_from = models.CharField(max_length=200)
-    date_to = models.CharField(max_length=10)
+    date_from = models.DateField()
+    date_to = models.DateField()
     category = models.CharField(max_length=200)
     case_no = models.ForeignKey(Case, on_delete=models.CASCADE)
     geodata = models.ForeignKey(Geodata, on_delete=models.CASCADE)

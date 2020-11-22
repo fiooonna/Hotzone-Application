@@ -239,7 +239,6 @@ const HomePage = () => {
   return (
     <div className={classes.root}>
       <div className={classes.flex}>
-        <i className={cn("fa fa-bars", classes.menuBtn)}></i>
         <span className={classes.title} onClick={() => setCurrentDisplay("")}>HotZone</span>
       </div>
       <div className={classes.account}>

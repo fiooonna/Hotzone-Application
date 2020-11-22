@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import { createUseStyles } from "react-jss"
 import cn from "classnames"
 import { useRootState } from "@/App.js"
@@ -9,6 +9,9 @@ import DateInput from "@/components/Utils/DateInput.js"
 import LocImpInput from "@/components/Utils/LocalImportInput.js"
 import SearchInput from "@/components/Utils/SearchInput.js"
 import SubmitButton from "@/components/Utils/SubmitButton.js"
+
+import { useTable } from "react-table"
+import "../../table_virus.css"
 
 const useInputFormStyle = createUseStyles({
   root: {
@@ -39,11 +42,20 @@ const useInputFormStyle = createUseStyles({
     marginBottom: 5,
   },
   nextPage: {
+    marginTop: 20,
+    width: 60,
+    height: 40,
+    color: "black",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
     cursor: "pointer",
-    textDecoration: " underline",
+    fontSize: 15,
+    borderRadius: 5,
     position: "absolute",
-    bottom: 0,
-    right: 20,
+    right: 15,
+    border: "1px solid black",
   },
   input: {
     width: "50%",
@@ -55,37 +67,82 @@ const useInputFormStyle = createUseStyles({
     },
     lineHeight: "28px",
   },
+  submitBtn: {
+    marginTop: 20,
+    width: "10%",
+    height: 40,
+    color: "white",
+    backgroundColor: "black",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontSize: 20,
+  },
 })
 
 const AddPatientInfo = (props) => {
-  const [page, setPage] = useState(0)
   const classes = useInputFormStyle()
-  const [patientName, setPatientName] = useState("")
-  const [patientID, setIDNumber] = useState("")
-  const [patientDOB, setPatientDOB] = useState("")
-  const [dateConfirmed, setDateConfirmed] = useState("")
-  const [localImported, setLocalImported] = useState("")
-  const [virusName, setVirusName] = useState("")
+  const [patientName, setPatientName] = useState(props.patient ? props.patient.patientName : "")
+  const [patientID, setIDNumber] = useState(props.patient ? props.patient.patientID : "")
+  const [patientDOB, setPatientDOB] = useState(props.patient ? props.patient.patientDOB : "")
+  const [dateConfirmed, setDateConfirmed] = useState(props.patient ? props.patient.dateConfirmed : "")
+  const [localImported, setLocalImported] = useState(props.patient ? props.patient.localImported : "local")
+  const [virusName, setVirusName] = useState(props.patient ? props.patient.virusName: "")
+
+  console.log(props.virusList)
+  const pinfo = async () => {
+      if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
+        alert("Missing some field")
+        return
+      }
+      await request("addPatientinfo", {
+        patientName: patientName,
+        patientID: patientID,
+        patientDOB: patientDOB,
+        dateConfirmed: dateConfirmed,
+        localImported: localImported,
+        virusName: virusName,
+      })
+      setPatientName("")
+      setIDNumber("")
+      setPatientDOB("")
+      setDateConfirmed("")
+      setLocalImported("")
+      setVirusName("")
+      window.alert("You have successfully input the patient and virus info.")
+  }
 
   const nextPage = () => {
-    const patient = {
-      patient_name: patientName,
-      hkid: patientID,
-      birth_date: patientDOB,
-      virus_name: virusName,
-      date_confirmed: dateConfirmed,
-      local_or_imported: localImported
+    if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
+      alert("Missing some field")
+      return
     }
-    props.onPageChange(1,patient)
+    const patient = {
+      patientName: patientName,
+      patientID: patientID,
+      patientDOB: patientDOB,
+      virusName: virusName,
+      dateConfirmed: dateConfirmed,
+      localImported: localImported
+    }
+    props.onPageChange(1,patient,null)
   }
+
+  useEffect(() => {
+    if(props.virusList.lengh <= 0){
+      alert("Please add virus first")
+      window.location.reload()
+    }
+  },[])
   return (
     <div className={classes.root}>
-      <form>
         <div className={classes.selectionTitle}>Patient Information</div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Patient Name:</div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={(e) => setPatientName(e.target.value)} />
+            <input value={patientName} onChange={(e) => setPatientName(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
@@ -93,25 +150,25 @@ const AddPatientInfo = (props) => {
             Patient ID Document Number:
           </div>
           <div className={classes.selectionInputField}>
-            <LineInput onChange={(e) => setIDNumber(e.target.value)} />
+            <input value={patientID} onChange={(e) => setIDNumber(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date of Birth:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={(e) => setPatientDOB(e.target.value)} />
+            <DateInput value={patientDOB} onChange={(e) => setPatientDOB(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Date Confirmed:</div>
           <div className={classes.selectionInputField}>
-            <DateInput onChange={(e) => setDateConfirmed(e.target.value)} />
+            <DateInput value={dateConfirmed} onChange={(e) => setDateConfirmed(e.target.value)} />
           </div>
         </div>
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Local/Imported:</div>
           <div className={classes.selectionInputField}>
-            <LocImpInput onChange={(e) => setLocalImported(e.target.value)} />
+            <LocImpInput value={localImported} onChange={(e) => setLocalImported(e.target.value)} />
           </div>
         </div>
 
@@ -120,20 +177,29 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Virus Name:</div>
           <div className={classes.selectionInputField}>
-            <SearchInput onChange={(e) => setVirusName(e.target.value)} />
+            <select
+                className="category"
+                value={virusName}
+                onChange={(e) => setVirusName(e.target.value)}
+              >
+                <option value="" disabled selected hidden>Please Choose...</option>
+                {
+                  props.virusList.length>0 &&
+                  props.virusList.map((virus, i) =>(
+                    <option key={i} value={virus.virus_name}>{virus.virus_name}</option>
+                  ))
+                }
+              </select>
           </div>
         </div>
 
         <div className={classes.selectionField}>
-          <div className={classes.selectionInputField}>
-            <SubmitButton onChange={(e) => setVirusName(e.target.value)} />
-          </div>
+
         </div>
 
         <div className={classes.nextPage} onClick={nextPage}>
           Next Page
         </div>
-      </form>
     </div>
   )
 }

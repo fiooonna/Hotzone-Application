@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import requests
-from django.views.decorators.csrf import csrf_exempt,csrf_protect 
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 import json
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -13,6 +13,7 @@ from rest_framework import serializers
 from .models import *
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
+from rest_framework import filters, generics
 
 def loadParams(body):
   body_unicode = body.decode('utf-8')
@@ -23,7 +24,7 @@ def loadParams(body):
 
 
 class getInfoView(APIView):
-  permission_classes = (IsAuthenticated,)    
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     current_user = request.user
@@ -36,7 +37,7 @@ class getInfoView(APIView):
     return Response(info)
 
 class signoutView(APIView):
-  permission_classes = (IsAuthenticated,)    
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     logout(request)
@@ -46,16 +47,16 @@ class signoutView(APIView):
     return Response(info)
 
 class getAllCaseView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
     obj = Case.objects.all()
     serializer = CaseSerializer(obj,many=True)
-    return Response(serializer.data)    
+    return Response(serializer.data)
 
 class getCaseByIdView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -82,16 +83,33 @@ class getCaseByIdView(APIView):
       "visited": visited_serializer.data,
       "locations": locations
     }
-    return Response(response)  
+    return Response(response)
 
 class getAllVirusView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
     obj = Virus.objects.all()
     serializer = VirusSerializer(obj,many=True)
-    return Response(serializer.data)    
+    return Response(serializer.data)
+
+# For getting the information of the patient
+class getPatientInfo(APIView):
+  permission_classes = (AllowAny,)
+
+  @csrf_exempt
+  def post(self, request):
+    obj = Patient.objects.all()
+    serializer = PatientSerializer(obj, many = True)
+    print(obj)
+    return Response (serializer.data)
+
+class patientFormVirus(generics.ListAPIView):
+    queryset = Virus.objects.all()
+    serializer_class = VirusSerializer(queryset,many=True)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['virus_name', 'common_name']
 
 # class getVirusByIdView(APIView):
 #   permission_classes = (IsAuthenticated,)
@@ -101,15 +119,16 @@ class getAllVirusView(APIView):
 #     params = loadParams(request.body)
 #     obj = Virus.objects.get(case_no=params['id'])
 #     serializer = VirusSerializer(obj,many=False)
-#     return Response(serializer.data)  
-
-def locationSearch(request,searchTerm):
-  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
+#     return Response(serializer.data)
+@csrf_exempt
+def locationSearch(request):
+  params = loadParams(request.body)
+  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+params['locationTerm'])
   return HttpResponse(x)
   #response = requests.get('http://my-ulr.com')
-  
+
 # def getTableData(request):
-  
+
 
 def json_default(value):
     if isinstance(value, datetime.date):
@@ -126,6 +145,22 @@ def viewDetail(request):
   print(serializer)
   return JsonResponse(serializer.data, safe=False)
 
+# Patient Information to backend
+@csrf_exempt
+def addPatientinfo(params):
+  pname = params['patientName']
+  pid = params['patientID']
+  pname = params['patientName']
+  pdob = params['patientDOB']
+  try:
+      patient=Patient.objects.get(hkid=pid)
+      return patient
+
+  except:
+      p=Patient.objects.create(patient_name=pname, hkid=pid, birth_date= pdob)
+      return p
+
+
 
 
 @csrf_exempt
@@ -141,12 +176,34 @@ def addVinfo(request):
     }
   return HttpResponse(json.dumps(response))
 
+#@csrf_exempt
+#def addLocation(request):
+ # body_unicode = request.body.decode('utf-8')
+  #body = json.loads(body_unicode)
+
+  #return HttpResponse("Success")
+
 @csrf_exempt
-def addLocation(request):
-  body_unicode = request.body.decode('utf-8')
-  body = json.loads(body_unicode)
-  Geodata.objects.create(location_name=body['nameEN'],address=body['addressEN'],Xcoord=body['x'],Ycoord=body['y'])
-  return HttpResponse("Success")
+def submitCase(request):
+  params=loadParams(request.body)
+  pDateConfirmed = params['patient']['dateConfirmed']
+  plocalImported = params['patient']['localImported']
+  patient=addPatientinfo(params['patient'])
+  virus = Virus.objects.get(virus_name=params['patient']['virusName'])
+  c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=virus)
+  locationarray=params['location']
+  for i in range(len(locationarray)):
+      try: 
+        geodata=Geodata.objects.get(address=locationarray[i]['location']['addressEN'], Xcoord=locationarray[i]['location']['x'], Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
+      except:
+        geodata=Geodata.objects.create(location_name=locationarray[i]['location']['nameEN'],address=locationarray[i]['location']['addressEN'],Xcoord=locationarray[i]['location']['x'],Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
+      
+  response={
+    "status": "Success",
+  }
+  return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def signin(request):
@@ -165,10 +222,8 @@ def signin(request):
       "token": token[0].key,
     }
     return HttpResponse(json.dumps(response))
-  else: 
+  else:
     response =  {
       "status": "Failed",
     }
     return HttpResponse(json.dumps(response))
-
-

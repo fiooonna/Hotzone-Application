@@ -55,7 +55,7 @@ const Login = (props) => {
   const classes = useLoginStlye()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  
+
 
   const login = async () => {
     if(username !== "" && password !== ""){
@@ -63,15 +63,18 @@ const Login = (props) => {
       if(result.status === "Success"){
         props.onLoginSuccess(result.token)
       }
+      else{
+        alert("Please enter correct information.")
+      }
     }
-    
+
   }
   return (
     <div className={classes.root}>
       <div className={classes.title}>Hotzone</div>
       <div className={classes.loginBox}>
         <div className={classes.column}>
-          <div>Usename</div>
+          <div>Username</div>
           <LineInput onChange={e => setUsername(e.target.value)} />
         </div>
         <div className={classes.column}>

@@ -25,11 +25,15 @@ const AddNewRecord = (props) => {
     const filtered = _.filter(l, (i) => i)
     console.log(filtered)
     if (filtered.length>0){
-      const result=await request("submitCase", {
+      const result = await request("submitCase", {
         patient: patientInfo,
-        location: locationRecord,
+        location: l,
       })
-      window.alert("You have successfully input the patient info.")
+      if(result.status === "Success"){
+        window.alert("You have successfully input the patient info.")
+        window.location.reload()
+      }
+      
     }
   }
   const onPageChange = (pageNum, p, l) => {

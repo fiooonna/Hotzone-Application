@@ -162,9 +162,13 @@ const LocationRecord = (props) => {
       const result = await request("searchLocation", {
         locationTerm: searchTerm,
       })
-
-      console.log(result)
+      if(result != "Error"){
+        console.log(result)
       setResult(result)
+      }
+      else {
+        alert("No matching record")
+      }
     }
   }
   useEffect(() => {

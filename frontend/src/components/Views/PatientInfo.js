@@ -133,7 +133,7 @@ const AddPatientInfo = (props) => {
   useEffect(() => {
     if(props.virusList.lengh <= 0){
       alert("Please add virus first")
-      window.reload()
+      window.location.reload()
     }
   },[])
   return (

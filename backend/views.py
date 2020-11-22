@@ -180,13 +180,17 @@ def submitCase(request):
   pDateConfirmed = params['patient']['dateConfirmed']
   plocalImported = params['patient']['localImported']
   patient=addPatientinfo(params['patient'])
-  c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=Virus.objects.get(params['patient']['virusName']))
+  virus = Virus.objects.get(virus_name=params['patient']['virusName'])
+  c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=virus)
   locationarray=params['location']
   for i in range(len(locationarray)):
-      geodata=Geodata.objects.get(address=locationarray[i]['addressEN'], Xcoord=locationarray[i]['x'], Ycoord=locationarray[i]['y'])
-      if (geodata is None):
-          Geodata.objects.create(location_name=locationarray[i]['nameEN'],address=locationarray[i]['addressEN'],Xcoord=locationarray[i]['x'],Ycoord=locationarray[i]['y'])
-      Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
+      try: 
+        geodata=Geodata.objects.get(address=locationarray[i]['location']['addressEN'], Xcoord=locationarray[i]['location']['x'], Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
+      except:
+        geodata=Geodata.objects.create(location_name=locationarray[i]['location']['nameEN'],address=locationarray[i]['location']['addressEN'],Xcoord=locationarray[i]['location']['x'],Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
+      
   response={
     "status": "Success",
   }

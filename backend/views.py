@@ -52,7 +52,19 @@ class getAllCaseView(APIView):
   @csrf_exempt
   def post(self, request):
     obj = Case.objects.all()
+    obj_p = Patient.objects.all()
+    obj_v = Virus.objects.all()
     serializer = CaseSerializer(obj,many=True)
+    serializer_p = PatientSerializer(obj_p,many=True)
+    serializer_v = VirusSerializer(obj_v,many=True)
+    for data_c in serializer.data:
+      for data_p in serializer_p.data:
+        if data_c.get("patient") == data_p.get("hkid"):
+          data_c["patient_name"] = data_p.get("patient_name")
+    for data_c in serializer.data:
+      for data_v in serializer_v.data:
+        if data_c.get("virus") == data_v.get("id"):
+          data_c["virus_name"] = data_v.get("common_name")
     return Response(serializer.data)
 
 class getCaseByIdView(APIView):
@@ -192,13 +204,16 @@ def submitCase(request):
   virus = Virus.objects.get(virus_name=params['patient']['virusName'])
   c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=virus)
   locationarray=params['location']
+  
   for i in range(len(locationarray)):
-      try: 
-        geodata=Geodata.objects.get(address=locationarray[i]['location']['addressEN'], Xcoord=locationarray[i]['location']['x'], Ycoord=locationarray[i]['location']['y'])
-        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
-      except:
-        geodata=Geodata.objects.create(location_name=locationarray[i]['location']['nameEN'],address=locationarray[i]['location']['addressEN'],Xcoord=locationarray[i]['location']['x'],Ycoord=locationarray[i]['location']['y'])
-        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
+    x = float(locationarray[i]['location']['x'])
+    y = float(locationarray[i]['location']['y'])
+    try: 
+      geodata=Geodata.objects.get(Xcoord=x, Ycoord=y)
+      Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
+    except:
+      geodata=Geodata.objects.create(location_name=locationarray[i]['location']['nameEN'],address=locationarray[i]['location']['addressEN'],Xcoord=x,Ycoord=y)
+      Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
       
   response={
     "status": "Success",

@@ -100,7 +100,7 @@ const AddPatientInfo = (props) => {
     props.patient ? props.patient.dateConfirmed : ""
   )
   const [localImported, setLocalImported] = useState(
-    props.patient ? props.patient.localImported : "local"
+    props.patient ? props.patient.localImported : "Local"
   )
   const [virusName, setVirusName] = useState(
     props.patient ? props.patient.virusName : ""

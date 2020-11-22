@@ -5,9 +5,8 @@ import { useRootState } from "@/App.js"
 import { request } from "@/request.js"
 import ClickAway from "@/components/Utils/ClickAway"
 
-import { useTable } from 'react-table'
-import '../../table.css'
-
+import { useTable } from "react-table"
+import "../../table.css"
 
 const tableStyle = createUseStyles({
   root: {
@@ -35,6 +34,10 @@ const useCaseDetailStyle = createUseStyles({
     position: "relative",
     display: "flex",
     flexDirection: "column",
+  },
+  container: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
   },
   backBtn: {
     position: "absoulte",
@@ -76,21 +79,17 @@ const CaseDetail = (props) => {
       accessor: "address",
     },
     {
-      Header: "X-coordiate",
-      accessor: "Xcoord",
-    },
-    {
-      Header: "Y-coordiate",
-      accessor: "Ycoord",
+      Header: "Category",
+      accessor: "category",
     },
   ]
 
   const columns = useMemo(() => COLUMNS, [])
-  
+
   useEffect(() => {
     for (let i = 0; i < info.locations.length; i++) {
-      const entry = {...info.locations[i], ...info.visited[i]}
-      setData(data => data.concat(entry))
+      const entry = { ...info.locations[i], ...info.visited[i] }
+      setData((data) => data.concat(entry))
     }
   },[])
   // console.log(data)
@@ -110,54 +109,55 @@ const CaseDetail = (props) => {
       <div className={classes.backBtn} onClick={props.onBack}>
         Back
       </div>
-      <div className={classes.row}>Case ID: {info.case.case_no}</div>
-      <div className={classes.row}>
-        Patient Name: {info.patient.patient_name}
+      <div className={classes.container}>
+        <div className={classes.row}>Case ID: {info.case.case_no}</div>
+        <div></div>
+        <div className={classes.row}>
+          Patient Name: {info.patient.patient_name}
+        </div>
+        <div className={classes.row}>
+          Confirmed Date: {info.case.date_confirmed}
+        </div>
+        <div className={classes.row}>ID number: {info.patient.hkid}</div>
+        <div className={classes.row}>
+          Local/Imported: {info.case.local_or_imported}
+        </div>
+        <div className={classes.row}>Virus Name: {info.virus.common_name}</div>
+        <div className={classes.row}>Date of birth: {info.patient.birth_date}</div>
       </div>
-      <div className={classes.row}>
-        Confirmed Date: {info.case.date_confirmed}
-      </div>
-      <div className={classes.row}>ID number: {info.patient.hkid}</div>
-      <div className={classes.row}>
-        Local/Imported: {info.case.local_or_imported}
-      </div>
-      <div className={classes.row}>Virus Name: {info.virus.common_name}</div>
-    
-      {
-        info.locations.length > 0 &&
+
+      {info.locations.length > 0 && (
         <>
-        <div className={classes.row}>Location visited:</div>
-        <table>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <tr
-                  {...row.getRowProps()}
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    )
-                  })}
+          <div className={classes.row}>Location visited:</div>
+          <table>
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </th>
+                  ))}
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.map((row) => {
+                prepareRow(row)
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </>
-      }
+      )}
     </div>
   )
 }
@@ -172,12 +172,12 @@ const ViewRecord = (props) => {
       accessor: "case_no",
     },
     {
-      Header: "Patient ID",
-      accessor: "patient",
+      Header: "Patient",
+      accessor: "patient_name",
     },
     {
-      Header: "virus ID",
-      accessor: "virus",
+      Header: "Virus",
+      accessor: "virus_name",
     },
     {
       Header: "Date Confirmed",
@@ -218,37 +218,41 @@ const ViewRecord = (props) => {
       {data.length > 0 && !selectCase && (
         <table>
           <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {
-                headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-                ))
-              }
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <tr {...row.getRowProps()} onClick={() => {showDetails(row)}} className={classes.row}>
-                {
-                  row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                  })
-                }
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()}>
+                    {column.render("Header")}
+                  </th>
+                ))}
               </tr>
-            )
-          })
-          }
-        </tbody>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <tr
+                  {...row.getRowProps()}
+                  onClick={() => {
+                    showDetails(row)
+                  }}
+                  className={classes.row}
+                >
+                  {row.cells.map((cell) => {
+                    return (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
         </table>
       )}
       {selectCase && (
         <CaseDetail case={selectCase} onBack={() => setSelectedCase(null)} />
       )}
-
     </div>
   )
 }

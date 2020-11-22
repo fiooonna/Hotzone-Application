@@ -27,7 +27,7 @@ const AddNewRecord = (props) => {
     if (filtered.length>0){
       const result = await request("submitCase", {
         patient: patientInfo,
-        location: l,
+        location: filtered,
       })
       if(result.status === "Success"){
         window.alert("You have successfully input the patient info.")

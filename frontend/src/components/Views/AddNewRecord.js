@@ -51,6 +51,10 @@ const AddNewRecord = (props) => {
     ;(async () => {
       const result = await request("getAllVirus", [])
       // console.log(result)
+      if(result.length < 1) {
+        alert("Please add virus first!")
+        window.location.reload()
+      }
       setVirusList(result)
     })()
   }, [])

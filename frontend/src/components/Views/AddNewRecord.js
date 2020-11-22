@@ -23,7 +23,7 @@ const AddNewRecord = (props) => {
   const submitForm = async(l) => {
     setLocationRecord(l)
     const filtered = _.filter(l, (i) => i)
-    console.log(filtered)
+    // console.log(filtered)
     if (filtered.length>0){
       const result = await request("submitCase", {
         patient: patientInfo,
@@ -38,7 +38,7 @@ const AddNewRecord = (props) => {
   }
   const onPageChange = (pageNum, p, l) => {
     if (p) {
-      console.log(p)
+      // console.log(p)
       setPatientInfo(p)
     }
     if (l) {
@@ -50,7 +50,7 @@ const AddNewRecord = (props) => {
   useEffect(() => {
     ;(async () => {
       const result = await request("getAllVirus", [])
-      console.log(result)
+      // console.log(result)
       setVirusList(result)
     })()
   }, [])

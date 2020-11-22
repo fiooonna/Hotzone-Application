@@ -163,8 +163,8 @@ const LocationRecord = (props) => {
         locationTerm: searchTerm,
       })
       if(result != "Error"){
-        console.log(result)
-      setResult(result)
+        // console.log(result)
+        setResult(result)
       }
       else {
         alert("No matching record")
@@ -181,7 +181,7 @@ const LocationRecord = (props) => {
 
   useEffect(() => {
     const locationData = { category, dateFrom, dateTo, location }
-    console.log(locationData)
+    // console.log(locationData)
     props.onRecordChange(locationData)
   }, [category, dateFrom, dateTo, location])
 
@@ -224,7 +224,7 @@ const LocationRecord = (props) => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <i className="fa fa-search" onClick={searchLocation}></i>
+              <i className={cn("fa fa-search", classes.searchBtn)} onClick={searchLocation}></i>
 
               {result !== "" && !selectLocation && (
                 <div className={classes.dropDown}>

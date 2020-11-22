@@ -281,6 +281,8 @@ const LocationInfo = (props) => {
     }
   }
 
+  console.log(locationRecord)
+
   const onDeleteRow = (i) => {
     let old = [...locationRecord]
     old[i] = null

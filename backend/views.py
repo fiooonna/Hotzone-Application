@@ -52,7 +52,19 @@ class getAllCaseView(APIView):
   @csrf_exempt
   def post(self, request):
     obj = Case.objects.all()
+    obj_p = Patient.objects.all()
+    obj_v = Virus.objects.all()
     serializer = CaseSerializer(obj,many=True)
+    serializer_p = PatientSerializer(obj_p,many=True)
+    serializer_v = VirusSerializer(obj_v,many=True)
+    for data_c in serializer.data:
+      for data_p in serializer_p.data:
+        if data_c.get("patient") == data_p.get("hkid"):
+          data_c["patient_name"] = data_p.get("patient_name")
+    for data_c in serializer.data:
+      for data_v in serializer_v.data:
+        if data_c.get("virus") == data_v.get("id"):
+          data_c["virus_name"] = data_v.get("common_name")
     return Response(serializer.data)
 
 class getCaseByIdView(APIView):

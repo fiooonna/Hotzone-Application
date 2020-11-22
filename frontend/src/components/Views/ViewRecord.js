@@ -172,12 +172,12 @@ const ViewRecord = (props) => {
       accessor: "case_no",
     },
     {
-      Header: "Patient ID",
-      accessor: "patient",
+      Header: "Patient",
+      accessor: "patient_name",
     },
     {
-      Header: "virus ID",
-      accessor: "virus",
+      Header: "Virus",
+      accessor: "virus_name",
     },
     {
       Header: "Date Confirmed",

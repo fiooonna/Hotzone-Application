@@ -93,7 +93,7 @@ const CaseDetail = (props) => {
       setData(data => data.concat(entry))
     }
   },[])
-  console.log(data)
+  // console.log(data)
   const tableInstance = useTable({
     columns,
     data,
@@ -204,7 +204,7 @@ const ViewRecord = (props) => {
     rows,
     prepareRow,
   } = tableInstance
-  console.log(rows)
+  // console.log(rows)
 
   const showDetails = async (row) => {
     const result = await request("getCaseById", { id: row.values.case_no })

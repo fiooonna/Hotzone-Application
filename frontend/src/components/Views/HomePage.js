@@ -202,7 +202,7 @@ const ViewTable = () => {
 const HomePage = () => {
   const classes = useHomePageStyle()
   const [currentDisplay, setCurrentDisplay] = useState("")
-  const [{ name }, dispatch] = useRootState()
+  const [{ username }, dispatch] = useRootState()
   const [modal, setModal] = useState(false)
   const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"])
 
@@ -213,7 +213,7 @@ const HomePage = () => {
         const username = result.username
         const name = result.first + " " + result.last
         dispatch({ type: "SET_USER", username, name })
-        console.log(result)
+        // console.log(result)
       }
     })()
   }, [])
@@ -251,7 +251,7 @@ const HomePage = () => {
           </ClickAway>
         )}
         <div className={classes.username} onClick={() => setModal(true)}>
-          {name}
+          {username}
         </div>
       </div>
       <div className={classes.menuPanel}>

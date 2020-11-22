@@ -43,7 +43,7 @@ const useInputFormStyle = createUseStyles({
   },
   nextPage: {
     marginTop: 20,
-    width: 60,
+    width: 120,
     height: 40,
     color: "black",
     display: "flex",
@@ -80,42 +80,71 @@ const useInputFormStyle = createUseStyles({
     cursor: "pointer",
     fontSize: 20,
   },
+  btnContainer: {
+    position: "relative",
+  },
 })
 
 const AddPatientInfo = (props) => {
   const classes = useInputFormStyle()
-  const [patientName, setPatientName] = useState(props.patient ? props.patient.patientName : "")
-  const [patientID, setIDNumber] = useState(props.patient ? props.patient.patientID : "")
-  const [patientDOB, setPatientDOB] = useState(props.patient ? props.patient.patientDOB : "")
-  const [dateConfirmed, setDateConfirmed] = useState(props.patient ? props.patient.dateConfirmed : "")
-  const [localImported, setLocalImported] = useState(props.patient ? props.patient.localImported : "local")
-  const [virusName, setVirusName] = useState(props.patient ? props.patient.virusName: "")
+  const [patientName, setPatientName] = useState(
+    props.patient ? props.patient.patientName : ""
+  )
+  const [patientID, setIDNumber] = useState(
+    props.patient ? props.patient.patientID : ""
+  )
+  const [patientDOB, setPatientDOB] = useState(
+    props.patient ? props.patient.patientDOB : ""
+  )
+  const [dateConfirmed, setDateConfirmed] = useState(
+    props.patient ? props.patient.dateConfirmed : ""
+  )
+  const [localImported, setLocalImported] = useState(
+    props.patient ? props.patient.localImported : "local"
+  )
+  const [virusName, setVirusName] = useState(
+    props.patient ? props.patient.virusName : ""
+  )
 
-  console.log(props.virusList)
+  // console.log(props.virusList)
   const pinfo = async () => {
-      if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
-        alert("Missing some field")
-        return
-      }
-      await request("addPatientinfo", {
-        patientName: patientName,
-        patientID: patientID,
-        patientDOB: patientDOB,
-        dateConfirmed: dateConfirmed,
-        localImported: localImported,
-        virusName: virusName,
-      })
-      setPatientName("")
-      setIDNumber("")
-      setPatientDOB("")
-      setDateConfirmed("")
-      setLocalImported("")
-      setVirusName("")
-      window.alert("You have successfully input the patient and virus info.")
+    if (
+      patientName === "" ||
+      patientID === "" ||
+      patientDOB === "" ||
+      dateConfirmed === "" ||
+      localImported === "" ||
+      virusName === ""
+    ) {
+      alert("Missing some field")
+      return
+    }
+    await request("addPatientinfo", {
+      patientName: patientName,
+      patientID: patientID,
+      patientDOB: patientDOB,
+      dateConfirmed: dateConfirmed,
+      localImported: localImported,
+      virusName: virusName,
+    })
+    setPatientName("")
+    setIDNumber("")
+    setPatientDOB("")
+    setDateConfirmed("")
+    setLocalImported("")
+    setVirusName("")
+    window.alert("You have successfully input the patient and virus info.")
   }
 
   const nextPage = () => {
-    if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
+    if (
+      patientName === "" ||
+      patientID === "" ||
+      patientDOB === "" ||
+      dateConfirmed === "" ||
+      localImported === "" ||
+      virusName === ""
+    ) {
       alert("Missing some field")
       return
     }
@@ -125,81 +154,98 @@ const AddPatientInfo = (props) => {
       patientDOB: patientDOB,
       virusName: virusName,
       dateConfirmed: dateConfirmed,
-      localImported: localImported
+      localImported: localImported,
     }
-    props.onPageChange(1,patient,null)
+    props.onPageChange(1, patient, null)
   }
 
   useEffect(() => {
-    if(props.virusList.lengh <= 0){
+    if (props.virusList.lengh <= 0) {
       alert("Please add virus first")
       window.location.reload()
     }
-  },[])
+  }, [])
   return (
     <div className={classes.root}>
-        <div className={classes.selectionTitle}>Patient Information</div>
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Patient Name:</div>
-          <div className={classes.selectionInputField}>
-            <input value={patientName} onChange={(e) => setPatientName(e.target.value)} />
-          </div>
+      <div className={classes.selectionTitle}>Patient Information</div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Patient Name:</div>
+        <div className={classes.selectionInputField}>
+          <input
+            value={patientName}
+            onChange={(e) => setPatientName(e.target.value)}
+          />
         </div>
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>
-            Patient ID Document Number:
-          </div>
-          <div className={classes.selectionInputField}>
-            <input value={patientID} onChange={(e) => setIDNumber(e.target.value)} />
-          </div>
+      </div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>
+          Patient ID Document Number:
         </div>
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Date of Birth:</div>
-          <div className={classes.selectionInputField}>
-            <DateInput value={patientDOB} onChange={(e) => setPatientDOB(e.target.value)} />
-          </div>
+        <div className={classes.selectionInputField}>
+          <input
+            value={patientID}
+            onChange={(e) => setIDNumber(e.target.value)}
+          />
         </div>
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Date Confirmed:</div>
-          <div className={classes.selectionInputField}>
-            <DateInput value={dateConfirmed} onChange={(e) => setDateConfirmed(e.target.value)} />
-          </div>
+      </div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Date of Birth:</div>
+        <div className={classes.selectionInputField}>
+          <DateInput
+            value={patientDOB}
+            onChange={(e) => setPatientDOB(e.target.value)}
+          />
         </div>
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Local/Imported:</div>
-          <div className={classes.selectionInputField}>
-            <LocImpInput value={localImported} onChange={(e) => setLocalImported(e.target.value)} />
-          </div>
+      </div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Date Confirmed:</div>
+        <div className={classes.selectionInputField}>
+          <DateInput
+            value={dateConfirmed}
+            onChange={(e) => setDateConfirmed(e.target.value)}
+          />
         </div>
+      </div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Local/Imported:</div>
+        <div className={classes.selectionInputField}>
+          <LocImpInput
+            value={localImported}
+            onChange={(e) => setLocalImported(e.target.value)}
+          />
+        </div>
+      </div>
 
-        <div className={classes.selectionTitle}>Virus Information</div>
+      <div className={classes.selectionTitle}>Virus Information</div>
 
-        <div className={classes.selectionField}>
-          <div className={classes.selectionLabel}>Virus Name:</div>
-          <div className={classes.selectionInputField}>
-            <select
-                className="category"
-                value={virusName}
-                onChange={(e) => setVirusName(e.target.value)}
-              >
-                <option value="" disabled selected hidden>Please Choose...</option>
-                {
-                  props.virusList.length>0 &&
-                  props.virusList.map((virus, i) =>(
-                    <option key={i} value={virus.virus_name}>{virus.virus_name}</option>
-                  ))
-                }
-              </select>
-          </div>
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>Virus Name:</div>
+        <div className={classes.selectionInputField}>
+          <select
+            className="category"
+            value={virusName}
+            onChange={(e) => setVirusName(e.target.value)}
+          >
+            <option value="" disabled selected hidden>
+              Please Choose...
+            </option>
+            {props.virusList.length > 0 &&
+              props.virusList.map((virus, i) => (
+                <option key={i} value={virus.virus_name}>
+                  {virus.virus_name}
+                </option>
+              ))}
+          </select>
         </div>
+      </div>
 
-        <div className={classes.selectionField}>
+      <div className={classes.selectionField}></div>
 
-        </div>
-
+      <div className={classes.btnContainer}>
         <div className={classes.nextPage} onClick={nextPage}>
           Next Page
         </div>
+      </div>
     </div>
   )
 }

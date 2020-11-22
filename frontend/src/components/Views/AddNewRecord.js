@@ -23,11 +23,11 @@ const AddNewRecord = (props) => {
   const submitForm = async(l) => {
     setLocationRecord(l)
     const filtered = _.filter(l, (i) => i)
-    // console.log(filtered)
+    console.log(filtered)
     if (filtered.length>0){
       const result = await request("submitCase", {
         patient: patientInfo,
-        location: l,
+        location: filtered,
       })
       if(result.status === "Success"){
         window.alert("You have successfully input the patient info.")

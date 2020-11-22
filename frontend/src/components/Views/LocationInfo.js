@@ -5,7 +5,7 @@ import cn from "classnames"
 import { useRootState } from "@/App.js"
 import { request } from "@/request.js"
 import ClickAway from "@/components/Utils/ClickAway"
-
+import _ from "lodash"
 const useInputFormStyle = createUseStyles({
   root: {
     width: "100%",
@@ -141,17 +141,17 @@ const LocationRecord = (props) => {
     if (category === "Visit") {
       setDateTo(value)
     }
-    if(value>dateTo && dateTo !== ""){
+    if (value > dateTo && dateTo !== "") {
       alert("Date from can only be earilier than date to")
       return
     }
     setDateFrom(value)
   }
   const onDateToChange = (value) => {
-    if (category === "Visit" ) {
+    if (category === "Visit") {
       setDateFrom(value)
     }
-    if(value<dateFrom && dateFrom !== ""){
+    if (value < dateFrom && dateFrom !== "") {
       alert("Date to can only be later than date from")
       return
     }
@@ -162,13 +162,18 @@ const LocationRecord = (props) => {
       const result = await request("searchLocation", {
         locationTerm: searchTerm,
       })
-      if(result != "Error"){
+      if (result != "Error") {
         // console.log(result)
         setResult(result)
-      }
-      else {
+      } else {
         alert("No matching record")
       }
+    }
+  }
+
+  const onDeleteRow = () => {
+    if (props.onDeleteRow()) {
+      setDeleted(true)
     }
   }
   useEffect(() => {
@@ -224,7 +229,10 @@ const LocationRecord = (props) => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <i className={cn("fa fa-search", classes.searchBtn)} onClick={searchLocation}></i>
+              <i
+                className={cn("fa fa-search", classes.searchBtn)}
+                onClick={searchLocation}
+              ></i>
 
               {result !== "" && !selectLocation && (
                 <div className={classes.dropDown}>
@@ -247,10 +255,7 @@ const LocationRecord = (props) => {
           <td>
             <i
               className={cn(classes.closeBtn, "fa fa-window-close")}
-              onClick={() => {
-                props.onDeleteRow()
-                setDeleted(true)
-              }}
+              onClick={onDeleteRow}
             ></i>
           </td>
         </tr>
@@ -271,11 +276,17 @@ const LocationInfo = (props) => {
   }
   const [locationRecord, setLocationRecord] = useState(props.locationRecord)
   const addRecord = () => {
-    const { dateFrom,dateTo,location } =  locationRecord[locationRecord.length -1]
-    if(dateFrom === "" || dateTo === "" || !location){
-      alert("Missing some fields")
+    let last
+    for (let i = locationRecord.length - 1; i >= 0; i--) {
+      if (locationRecord[i]) {
+        last = locationRecord[i]
+        break
+      }
     }
-    else{
+    const { dateFrom, dateTo, location } = last
+    if (dateFrom === "" || dateTo === "" || !location) {
+      alert("Missing some fields")
+    } else {
       const entry = { ...blankrecord }
       setLocationRecord((locationRecord) => locationRecord.concat(entry))
     }
@@ -284,9 +295,31 @@ const LocationInfo = (props) => {
   console.log(locationRecord)
 
   const onDeleteRow = (i) => {
+    const a = _.filter(locationRecord, (i) => {
+      if (!i) return false
+      else {
+        const { dateFrom, dateTo, location } = i
+        return !(dateFrom === "" || dateTo === "" || !location)
+      }
+    })
+    const { dateFrom, dateTo, location } = locationRecord[i]
+    const b = locationRecord.length > 1
+
+    console.log(a, b)
+    if (!(a.length > 1)) {
+      if ((dateFrom === "" || dateTo === "" || !location) && b) {
+        let old = [...locationRecord]
+        old[i] = null
+        setLocationRecord(old)
+        return true
+      }
+      alert("You need at least one location record")
+      return false
+    }
     let old = [...locationRecord]
     old[i] = null
     setLocationRecord(old)
+    return true
   }
 
   const onRecordChange = (location, i) => {
@@ -296,13 +329,17 @@ const LocationInfo = (props) => {
   }
 
   const submit = () => {
-    const { dateFrom,dateTo,location } =  locationRecord[locationRecord.length -1]
-    if(dateFrom === "" || dateTo === "" || !location){
+    const a = locationRecord.some(i => {
+      if(i){
+        const { dateFrom, dateTo, location } = i
+        return (dateFrom === "" || dateTo === "" || !location) 
+      }
+      return false
+    })
+    if (a) {
       alert("Missing some fields")
-    }
-
-    else{
-      const entry = { ...blankrecord }
+    } else {
+      console.log(locationRecord)
       props.submitForm(locationRecord)
     }
   }
@@ -345,7 +382,9 @@ const LocationInfo = (props) => {
         </div>
         <div
           className={classes.submitBtn}
-          onClick={() => {submit()}}
+          onClick={() => {
+            submit()
+          }}
         >
           Submit
         </div>

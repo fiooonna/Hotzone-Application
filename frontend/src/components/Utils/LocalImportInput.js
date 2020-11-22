@@ -26,8 +26,8 @@ const LocImpInput = (props) => {
   return (
     <div className={classes.root}>
       <select className={classes.input} required onChange={props.onChange}>
-        <option value="local">Local</option>
-        <option value="import">Imported</option>
+        <option value="Local">Local</option>
+        <option value="Import">Imported</option>
       </select>
     </div>
   )

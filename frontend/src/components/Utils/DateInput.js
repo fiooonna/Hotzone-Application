@@ -25,7 +25,7 @@ const DateInput = (props) => {
   const classes = useDateInputStyle()
   return (
     <div className={classes.root}>
-      <input type={props.type? props.type : "date"} className={classes.input} required onChange={props.onChange}/>
+      <input value={props.value} type={props.type? props.type : "date"} className={classes.input} required onChange={props.onChange}/>
     </div>
   )
 }

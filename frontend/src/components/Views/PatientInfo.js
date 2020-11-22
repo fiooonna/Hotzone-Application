@@ -42,11 +42,20 @@ const useInputFormStyle = createUseStyles({
     marginBottom: 5,
   },
   nextPage: {
+    marginTop: 20,
+    width: 60,
+    height: 40,
+    color: "black",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
     cursor: "pointer",
-    textDecoration: " underline",
+    fontSize: 15,
+    borderRadius: 5,
     position: "absolute",
-    bottom: 0,
-    right: 20,
+    right: 15,
+    border: "1px solid black",
   },
   input: {
     width: "50%",
@@ -74,16 +83,20 @@ const useInputFormStyle = createUseStyles({
 })
 
 const AddPatientInfo = (props) => {
-  const [page, setPage] = useState(0)
   const classes = useInputFormStyle()
-  const [patientName, setPatientName] = useState("")
-  const [patientID, setIDNumber] = useState("")
-  const [patientDOB, setPatientDOB] = useState("")
-  const [dateConfirmed, setDateConfirmed] = useState("")
-  const [localImported, setLocalImported] = useState("")
-  const [virusName, setVirusName] = useState("")
+  const [patientName, setPatientName] = useState(props.patient ? props.patient.patientName : "")
+  const [patientID, setIDNumber] = useState(props.patient ? props.patient.patientID : "")
+  const [patientDOB, setPatientDOB] = useState(props.patient ? props.patient.patientDOB : "")
+  const [dateConfirmed, setDateConfirmed] = useState(props.patient ? props.patient.dateConfirmed : "")
+  const [localImported, setLocalImported] = useState(props.patient ? props.patient.localImported : "local")
+  const [virusName, setVirusName] = useState(props.patient ? props.patient.virusName: "")
 
+  console.log(props.virusList)
   const pinfo = async () => {
+      if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
+        alert("Missing some field")
+        return
+      }
       await request("addPatientinfo", {
         patientName: patientName,
         patientID: patientID,
@@ -102,16 +115,27 @@ const AddPatientInfo = (props) => {
   }
 
   const nextPage = () => {
-    const patient = {
-      patient_name: patientName,
-      hkid: patientID,
-      birth_date: patientDOB,
-      virus_name: virusName,
-      date_confirmed: dateConfirmed,
-      local_or_imported: localImported
+    if(patientName === "" || patientID === "" || patientDOB === "" || dateConfirmed === "" || localImported === "" || virusName === ""){
+      alert("Missing some field")
+      return
     }
-    props.onPageChange(1,patient)
+    const patient = {
+      patientName: patientName,
+      patientID: patientID,
+      patientDOB: patientDOB,
+      virusName: virusName,
+      dateConfirmed: dateConfirmed,
+      localImported: localImported
+    }
+    props.onPageChange(1,patient,null)
   }
+
+  useEffect(() => {
+    if(props.virusList.lengh <= 0){
+      alert("Please add virus first")
+      window.reload()
+    }
+  },[])
   return (
     <div className={classes.root}>
         <div className={classes.selectionTitle}>Patient Information</div>
@@ -153,14 +177,24 @@ const AddPatientInfo = (props) => {
         <div className={classes.selectionField}>
           <div className={classes.selectionLabel}>Virus Name:</div>
           <div className={classes.selectionInputField}>
-            <input value={virusName} onChange={(e) => setVirusName(e.target.value)} />
+            <select
+                className="category"
+                value={virusName}
+                onChange={(e) => setVirusName(e.target.value)}
+              >
+                <option value="" disabled selected hidden>Please Choose...</option>
+                {
+                  props.virusList.length>0 &&
+                  props.virusList.map((virus, i) =>(
+                    <option key={i} value={virus.virus_name}>{virus.virus_name}</option>
+                  ))
+                }
+              </select>
           </div>
         </div>
 
         <div className={classes.selectionField}>
-          <div className={classes.submitBtn} onClick={pinfo}>
-            Submit
-          </div>
+
         </div>
 
         <div className={classes.nextPage} onClick={nextPage}>
@@ -171,4 +205,3 @@ const AddPatientInfo = (props) => {
 }
 
 export default AddPatientInfo
-

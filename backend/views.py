@@ -23,7 +23,7 @@ def loadParams(body):
 
 
 class getInfoView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     current_user = request.user
@@ -36,7 +36,7 @@ class getInfoView(APIView):
     return Response(info)
 
 class signoutView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     logout(request)
@@ -46,7 +46,7 @@ class signoutView(APIView):
     return Response(info)
 
 class getAllCaseView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -55,7 +55,7 @@ class getAllCaseView(APIView):
     return Response(serializer.data)
 
 class getCaseByIdView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -85,7 +85,7 @@ class getCaseByIdView(APIView):
     return Response(response)
 
 class getAllVirusView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -95,7 +95,7 @@ class getAllVirusView(APIView):
 
 # For getting the information of the patient
 class getPatientInfo(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -112,9 +112,10 @@ class getPatientInfo(APIView):
 #     obj = Virus.objects.get(case_no=params['id'])
 #     serializer = VirusSerializer(obj,many=False)
 #     return Response(serializer.data)
-
-def locationSearch(request,searchTerm):
-  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
+@csrf_exempt
+def locationSearch(request):
+  params = loadParams(request.body)
+  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+params['locationTerm'])
   return HttpResponse(x)
   #response = requests.get('http://my-ulr.com')
 
@@ -138,22 +139,20 @@ def viewDetail(request):
 
 # Patient Information to backend
 @csrf_exempt
-def addPatientinfo(request):
-  params = loadParams(request.body)
-  print(params)
+def addPatientinfo(params):
   pname = params['patientName']
   pid = params['patientID']
   pdob = params['patientDOB']
-  pDateConfirmed = params['dateConfirmed']
-  plocalImported = params['localImported']
-  p=Patient(patient_name=pname, hkid=pid, birth_date= pdob)
-  p.save()
-  c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p, virus =Virus.objects.get(pk=2))
-  c.save()
-  response =  {
-      "status": "Success",
-    }
-  return HttpResponse(json.dumps(response))
+  try:
+      patient=Patient.objects.get(hkid=pid)
+      return patient
+
+  except:
+      p=Patient.objects.create(patient_name=pname, hkid=pid, birth_date= pdob)
+      return p
+
+
+
 
 @csrf_exempt
 def addVinfo(request):
@@ -168,12 +167,30 @@ def addVinfo(request):
     }
   return HttpResponse(json.dumps(response))
 
+#@csrf_exempt
+#def addLocation(request):
+ # body_unicode = request.body.decode('utf-8')
+  #body = json.loads(body_unicode)
+
+  #return HttpResponse("Success")
+
 @csrf_exempt
-def addLocation(request):
-  body_unicode = request.body.decode('utf-8')
-  body = json.loads(body_unicode)
-  Geodata.objects.create(location_name=body['nameEN'],address=body['addressEN'],Xcoord=body['x'],Ycoord=body['y'])
-  return HttpResponse("Success")
+def submitCase(request):
+  params=loadParams(request.body)
+  pDateConfirmed = params['patient']['dateConfirmed']
+  plocalImported = params['patient']['localImported']
+  patient=addPatientinfo(params['patient'])
+  c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=Virus.objects.get(params['patient']['virusName']))
+  locationarray=params['location']
+  for i in range(len(locationarray)):
+      geodata=Geodata.objects.get(address=locationarray[i]['addressEN'], Xcoord=locationarray[i]['x'], Ycoord=locationarray[i]['y'])
+      if (geodata is None):
+          Geodata.objects.create(location_name=locationarray[i]['nameEN'],address=locationarray[i]['addressEN'],Xcoord=locationarray[i]['x'],Ycoord=locationarray[i]['y'])
+      Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
+  response={
+    "status": "Success",
+  }
+  return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def signin(request):

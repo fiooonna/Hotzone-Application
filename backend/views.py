@@ -24,7 +24,7 @@ def loadParams(body):
 
 
 class getInfoView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     current_user = request.user
@@ -37,7 +37,7 @@ class getInfoView(APIView):
     return Response(info)
 
 class signoutView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
   @csrf_exempt
   def post(self, request):
     logout(request)
@@ -47,7 +47,7 @@ class signoutView(APIView):
     return Response(info)
 
 class getAllCaseView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -56,7 +56,7 @@ class getAllCaseView(APIView):
     return Response(serializer.data)
 
 class getCaseByIdView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -86,7 +86,7 @@ class getCaseByIdView(APIView):
     return Response(response)
 
 class getAllVirusView(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -96,7 +96,7 @@ class getAllVirusView(APIView):
 
 # For getting the information of the patient
 class getPatientInfo(APIView):
-  permission_classes = (IsAuthenticated,)
+  permission_classes = (AllowAny,)
 
   @csrf_exempt
   def post(self, request):
@@ -120,9 +120,10 @@ class patientFormVirus(generics.ListAPIView):
 #     obj = Virus.objects.get(case_no=params['id'])
 #     serializer = VirusSerializer(obj,many=False)
 #     return Response(serializer.data)
-
-def locationSearch(request,searchTerm):
-  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+searchTerm)
+@csrf_exempt
+def locationSearch(request):
+  params = loadParams(request.body)
+  x = requests.get('https://geodata.gov.hk/gs/api/v1.0.0/locationSearch?q='+params['locationTerm'])
   return HttpResponse(x)
   #response = requests.get('http://my-ulr.com')
 
@@ -146,47 +147,21 @@ def viewDetail(request):
 
 # Patient Information to backend
 @csrf_exempt
-def addPatientinfo(request):
-  params = loadParams(request.body)
-  print(params)
+def addPatientinfo(params):
+  pname = params['patientName']
   pid = params['patientID']
   pname = params['patientName']
   pdob = params['patientDOB']
-  pDateConfirmed = params['dateConfirmed']
-  plocalImported = params['localImported']
-  pVirus = params['virusName']
-  p=Patient(patient_name=pname, hkid=pid, birth_date= pdob)
-  p.save()
+  try:
+      patient=Patient.objects.get(hkid=pid)
+      return patient
 
-  #mylenpatients = Patient.objects.count()
-  #print(mylenpatients)
-  #print(type(Patient.objects.all()[3]))
-  #print(Patient.objects.all()[3].hkid)
-  #print(type(Patient.objects.all()[3].hkid))
-  #print(Patient.objects.get(hkid='682679'))
-  #j=1
-  #for j in range (1, mylenpatients):
-    #if (pid == Patient.objects.all()[j].hkid):
-      #p=Patient.objects.get(hkid=pid)
-      #print("Existing Patient!")
-      #pass
-    #else:
-      #pass
-  #print(Patient.objects.count())
-  #print(Patient.objects.get(patient_name="person15"))
+  except:
+      p=Patient.objects.create(patient_name=pname, hkid=pid, birth_date= pdob)
+      return p
 
-  mylen = Virus.objects.count()+1
-  for i in range(1, mylen):
-    if (pVirus == str(Virus.objects.get(pk=i))):
-      c=Case(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=p,virus=Virus.objects.get(pk=1))
-      print("Info saved!")
-      c.save()
-  #virus=Virus.objects.get(pk=2); common_name; max_infect_period
 
-  response =  {
-      "status": "Success",
-    }
-  return HttpResponse(json.dumps(response))
+
 
 @csrf_exempt
 def addVinfo(request):
@@ -201,12 +176,34 @@ def addVinfo(request):
     }
   return HttpResponse(json.dumps(response))
 
+#@csrf_exempt
+#def addLocation(request):
+ # body_unicode = request.body.decode('utf-8')
+  #body = json.loads(body_unicode)
+
+  #return HttpResponse("Success")
+
 @csrf_exempt
-def addLocation(request):
-  body_unicode = request.body.decode('utf-8')
-  body = json.loads(body_unicode)
-  Geodata.objects.create(location_name=body['nameEN'],address=body['addressEN'],Xcoord=body['x'],Ycoord=body['y'])
-  return HttpResponse("Success")
+def submitCase(request):
+  params=loadParams(request.body)
+  pDateConfirmed = params['patient']['dateConfirmed']
+  plocalImported = params['patient']['localImported']
+  patient=addPatientinfo(params['patient'])
+  virus = Virus.objects.get(virus_name=params['patient']['virusName'])
+  c=Case.objects.create(date_confirmed=pDateConfirmed, local_or_imported=plocalImported,patient=patient, virus=virus)
+  locationarray=params['location']
+  for i in range(len(locationarray)):
+      try: 
+        geodata=Geodata.objects.get(address=locationarray[i]['location']['addressEN'], Xcoord=locationarray[i]['location']['x'], Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c.case_no,geodata=geodata)
+      except:
+        geodata=Geodata.objects.create(location_name=locationarray[i]['location']['nameEN'],address=locationarray[i]['location']['addressEN'],Xcoord=locationarray[i]['location']['x'],Ycoord=locationarray[i]['location']['y'])
+        Visited.objects.create(date_from=locationarray[i]['dateFrom'],date_to=locationarray[i]['dateTo'],category=locationarray[i]['category'],case_no=c,geodata=geodata)
+      
+  response={
+    "status": "Success",
+  }
+  return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def signin(request):

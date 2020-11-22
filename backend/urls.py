@@ -4,8 +4,7 @@ from . import views
 
 
 urlpatterns = [
-  path("location/<str:searchTerm>",views.locationSearch,name="location"),
-  path("add/",views.addLocation,name="addLocation"),
+  path("searchLocation/",views.locationSearch,name="location"),
   path("signin/",views.signin,name="login"),
   path("signout/",views.signoutView.as_view(),name="signout"),
   path("getUserInfo/",views.getInfoView.as_view(),name="getUserInfo"),
@@ -14,6 +13,7 @@ urlpatterns = [
   path("addVinfo/",views.addVinfo,name="addVinfo"),
   path("getAllVirus/",views.getAllVirusView.as_view(),name="getAllVirus"),
   path("addPatientinfo/", views.addPatientinfo, name="addPatientinfo"),
+  path("submitCase/", views.submitCase,name="submitCase"),
   # path("getVirusById/",views.getVirusByIdView.as_view(),name="getVirusById"),
   # path('',views.index,name='index')
 ]

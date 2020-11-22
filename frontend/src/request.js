@@ -22,9 +22,14 @@ export async function request(endpoint, params) {
     // network error
     console.error(e)
   }
-  const data = await response.json()
-  console.log(data)
-  return data
+  try {
+    const data = await response.json()
+    console.log(data)
+    return data
+  } catch (error) {
+    return "Error"
+  }
+  
   // if (data.hasOwnProperty("result")) {
   //   console.log("???")
   //   return data.result

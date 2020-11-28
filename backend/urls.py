@@ -14,6 +14,7 @@ urlpatterns = [
   path("getAllVirus/",views.getAllVirusView.as_view(),name="getAllVirus"),
   path("addPatientinfo/", views.addPatientinfo, name="addPatientinfo"),
   path("submitCase/", views.submitCase,name="submitCase"),
+  path("findCluster/",views.findCluster,name="findCluster"),
   # path("getVirusById/",views.getVirusByIdView.as_view(),name="getVirusById"),
   # path('',views.index,name='index')
 ]

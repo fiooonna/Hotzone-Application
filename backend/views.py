@@ -196,6 +196,20 @@ def addVinfo(request):
   #return HttpResponse("Success")
 
 @csrf_exempt
+def findCluster(request):
+    params = loadParams(request.body)
+    print(params)
+    Dvalue = params['Dvalue']
+    Tvalue = params['Tvalue']
+    Cvalue = params['Cvalue']
+    # implement your backend function here to find cluster
+    print(Dvalue, Tvalue, Cvalue)
+    response =  {
+      "status": "Success",
+    }
+    return 0
+
+@csrf_exempt
 def submitCase(request):
   params=loadParams(request.body)
   pDateConfirmed = params['patient']['dateConfirmed']

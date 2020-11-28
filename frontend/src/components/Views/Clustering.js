@@ -44,9 +44,9 @@ const clusteringStyle = createUseStyles({
 
 const Clustering = (props) => {
     const classes = clusteringStyle()
-    const [Dvalue, setDvalue] = useState("")
-    const [Tvalue, setTvalue] = useState("")
-    const [Cvalue, setCvalue] = useState("")
+    const [Dvalue, setDvalue] = useState(200)
+    const [Tvalue, setTvalue] = useState(3)
+    const [Cvalue, setCvalue] = useState(2)
     const [data, setData] = useState([])
 
     const clustering_func = async () => {

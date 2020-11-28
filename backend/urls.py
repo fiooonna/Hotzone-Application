@@ -12,6 +12,7 @@ urlpatterns = [
   path("getCaseById/",views.getCaseByIdView.as_view(),name="getCaseById"),
   path("addVinfo/",views.addVinfo,name="addVinfo"),
   path("getAllVirus/",views.getAllVirusView.as_view(),name="getAllVirus"),
+  path("getPatientInfo/",views.getPatientInfo.as_view(),name="getPatientInfo"),
   path("addPatientinfo/", views.addPatientinfo, name="addPatientinfo"),
   path("submitCase/", views.submitCase,name="submitCase"),
   path("findCluster/",views.findCluster,name="findCluster"),

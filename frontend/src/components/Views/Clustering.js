@@ -88,13 +88,13 @@ const Clustering = (props) => {
   // const classes = clusteringStyle()
   const [cookies, setCookie] = useCookies(["cookie-name"])
   const [currentDisplay, setCurrentDispaly] = useState("data")
-  const [clusters, setClusters] = useState([])
+  const [clusters, setClusters] = useState(new Array(0))
   const [Dvalue, setDvalue] = useState(cookies.D || 200)
   const [Tvalue, setTvalue] = useState(cookies.T || 3)
   const [Cvalue, setCvalue] = useState(cookies.C || 2)
   const [clusterNo, setClusterNo] = useState(0)
 
-  const data = clusters.length>0 ? clusters[clusterNo] : []
+  const data = clusters.length > 0 ? clusters[clusterNo] : []
   const classes = mainStyle()
   const onSettingSaved = (d, t, c) => {
     setDvalue(d)
@@ -169,10 +169,17 @@ const Clustering = (props) => {
           </div>
           <div className={classes.top}>
             <div className={classes.bigTitle}>Clusters</div>
-            <select className={classes.option} selected={clusterNo} onChange={(e) => setClusterNo(e.target.value)}>
-              {clusters.length > 0 &&
-                clusters.map((c, i) => <option value={i}>{i+1}</option>)}
-            </select>
+            {clusters.length > 0 && (
+              <select
+                className={classes.option}
+                selected={clusterNo}
+                onChange={(e) => setClusterNo(e.target.value)}
+              >
+                {clusters.map((c, i) => (
+                  <option value={i}>{i + 1}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           {clusters.length > 0 && data.length > 0 && (
@@ -206,6 +213,10 @@ const Clustering = (props) => {
               </tbody>
             </table>
           )}
+          {
+            clusters.length === 0 &&
+            <div>There is no cluster</div> 
+          }
         </div>
       )}
       {currentDisplay === "setting" && (

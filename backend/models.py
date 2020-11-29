@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinLengthValidator
 import uuid
 
 class Geodata(models.Model):
@@ -44,3 +46,7 @@ class Visited(models.Model):
     category = models.CharField(max_length=200)
     case_no = models.ForeignKey(Case, on_delete=models.CASCADE)
     geodata = models.ForeignKey(Geodata, on_delete=models.CASCADE)
+
+class Staff(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    staff_num = models.CharField(max_length=7, validators=[MinLengthValidator(7)])

@@ -14,6 +14,9 @@ from .models import *
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from rest_framework import filters, generics
+from datetime import date,datetime
+from .cluster import cluster
+import numpy as np
 
 def loadParams(body):
   body_unicode = body.decode('utf-8')
@@ -194,6 +197,38 @@ def addVinfo(request):
   #body = json.loads(body_unicode)
 
   #return HttpResponse("Success")
+
+@csrf_exempt
+def findCluster(request):
+    params = loadParams(request.body)
+    print(params)
+    objs_v = Visited.objects.select_related('geodata').all()
+    vectors_4d = list()
+    day_0 = date.fromisoformat('2020-01-01')
+    for case in objs_v:
+      vector = list()
+      geodata = case.geodata
+      vector.append(float(geodata.Xcoord))
+      vector.append(float(geodata.Ycoord))
+      vector.append((case.date_from-day_0).days   )
+      
+      vector.append(int(case.case_no.case_no))
+      vectors_4d.append(vector)
+    Dvalue = params['Dvalue']
+    Tvalue = params['Tvalue']
+    Cvalue = params['Cvalue']
+
+    result = cluster(np.array(vectors_4d),int(Dvalue),int(Tvalue),int(Cvalue))
+    # implement your backend function here to find cluster
+    # print(Dvalue, Tvalue, Cvalue)
+    print(result)
+    response =  {
+      "status": "Success",
+      "clusters":result
+    }
+
+    
+    return HttpResponse(json.dumps(response))
 
 @csrf_exempt
 def submitCase(request):

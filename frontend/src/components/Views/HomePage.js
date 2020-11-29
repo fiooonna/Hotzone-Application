@@ -8,6 +8,7 @@ import { useCookies } from "react-cookie"
 import AddNewRecord from "@/components/Views/AddNewRecord"
 import ViewRecord from "@/components/Views/ViewRecord"
 import VirusInfo from "./VirusInfo"
+import Clustering from "./Clustering"
 
 // import ReactTable from "react-table";
 // import "react-table/react-table.css"
@@ -270,6 +271,9 @@ const HomePage = () => {
         <div className={cn(classes.addNew, classes.menuOptions)} onClick={() => setCurrentDisplay("virusInfo")}>
           Virus Info
         </div>
+        <div className={cn(classes.addNew, classes.menuOptions)} onClick={() => setCurrentDisplay("clustering")}>
+          Clustering
+        </div>
       </div>
       {currentDisplay === "" && (
         <div className={classes.unselected}>
@@ -279,6 +283,7 @@ const HomePage = () => {
       {currentDisplay === "addNewRecord" && <AddNewRecord />}
       {currentDisplay === "viewRecord" && <ViewRecord />}
       {currentDisplay === "virusInfo" && <VirusInfo />}
+      {currentDisplay === "clustering" && <Clustering />}
     </div>
   )
 }

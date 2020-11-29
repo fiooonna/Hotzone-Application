@@ -41,6 +41,12 @@ const useInputFormStyle = createUseStyles({
     marginTop: 5,
     marginBottom: 5,
   },
+  selectionInputIDField:{
+    width: "160px",
+    marginLeft: 20,
+    marginTop: 5,
+    marginBottom: 5,
+  },
   nextPage: {
     marginTop: 20,
     width: 120,
@@ -66,6 +72,25 @@ const useInputFormStyle = createUseStyles({
       outline: "none",
     },
     lineHeight: "28px",
+  },
+  autofillBtn:{
+    marginTop: 20,
+    height: 20,
+    color: "black",
+    backgroundColor: "lightgrey",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+    fontSize: 13,
+    border: "1px solid black",
+    borderRadius: 3,
+    marginLeft: 15,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  autofillBtnContainer:{
+
   },
   submitBtn: {
     marginTop: 20,
@@ -135,7 +160,23 @@ const AddPatientInfo = (props) => {
     setVirusName("")
     window.alert("You have successfully input the patient and virus info.")
   }
+  const autofill= async () => {
+    if (patientID!==''){
+      var count=0
+      const info=await request("getPatientInfo", [])
+      for (var i=0;i<info.length;i++){
+        if (info[i].hkid==patientID){
+          setPatientName(info[i].patient_name)
+          setPatientDOB(info[i].birth_date)
+          count=1
+        }
+      }
+      if (count==0){
+        alert("No matching record")
+      }
+    }
 
+  }
   const nextPage = () => {
     if (
       patientName === "" ||
@@ -168,23 +209,29 @@ const AddPatientInfo = (props) => {
   return (
     <div className={classes.root}>
       <div className={classes.selectionTitle}>Patient Information</div>
+
+      <div className={classes.selectionField}>
+        <div className={classes.selectionLabel}>
+          Patient ID Document Number:
+        </div>
+        <div className={classes.selectionInputIDField}>
+          <input
+            value={patientID}
+            onChange={(e) => setIDNumber(e.target.value)}
+          />
+        </div>
+        <div className={classes.autofillBtnContainer}>
+        <div className={classes.autofillBtn} onClick={autofill}>
+          Autofill existing patient info
+        </div>
+        </div>
+      </div>
       <div className={classes.selectionField}>
         <div className={classes.selectionLabel}>Patient Name:</div>
         <div className={classes.selectionInputField}>
           <input
             value={patientName}
             onChange={(e) => setPatientName(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className={classes.selectionField}>
-        <div className={classes.selectionLabel}>
-          Patient ID Document Number:
-        </div>
-        <div className={classes.selectionInputField}>
-          <input
-            value={patientID}
-            onChange={(e) => setIDNumber(e.target.value)}
           />
         </div>
       </div>

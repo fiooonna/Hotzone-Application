@@ -30,7 +30,7 @@ SECRET_KEY =  env('HOTZONE_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('HOTZONE_DEBUG', default=False)
 
-ALLOWED_HOSTS = ['hotzone-groupv.herokuapp.com', 'localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['hotzone-group-v.herokuapp.com', 'localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition

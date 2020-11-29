@@ -203,6 +203,12 @@ def findCluster(request):
     params = loadParams(request.body)
     print(params)
     objs_v = Visited.objects.select_related('geodata').all()
+    if(len(objs_v)<1):
+      response =  {
+      "status": "Success",
+      "clusters":list()
+      }
+      return HttpResponse(json.dumps(response))
     vectors_4d = list()
     day_0 = date.fromisoformat('2020-01-01')
     for case in objs_v:

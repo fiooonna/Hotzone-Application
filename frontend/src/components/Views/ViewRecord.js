@@ -250,6 +250,10 @@ const ViewRecord = (props) => {
           </tbody>
         </table>
       )}
+      {
+        data.length === 0 && !selectCase &&
+        <div>There is no record</div>
+      }
       {selectCase && (
         <CaseDetail case={selectCase} onBack={() => setSelectedCase(null)} />
       )}

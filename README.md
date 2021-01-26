@@ -1,8 +1,8 @@
-HOTZONE
+#Hotzone
 
-This is a COMP3297 Software Engineering project which allows users to visualise virus clustering cases, and input patient information with location record in an user-friendly interface.
+##This is a COMP3297 Software Engineering project which allows users to visualise virus clustering cases, and input patient information with location record in an user-friendly interface.
 
-Website url: https://hotzone-group-v.herokuapp.com/
+##Website url: https://hotzone-group-v.herokuapp.com/
 
 username: adminse
 password: comp3297

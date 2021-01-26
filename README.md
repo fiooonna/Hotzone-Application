@@ -1,4 +1,9 @@
-How to start server
+HOTZONE
+
+Website url: https://hotzone-group-v.herokuapp.com/
+
+
+How to start server 
 
 1. git clone 
 2. cd frontend, npm install, npm run build
